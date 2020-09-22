@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">SportSpot</string>
+    <string name="label_email">email</string>
+    <string name="label_password">password</string>
+    <string name="login_btn_text">login</string>
+    <string name="register_here">Register here!</string>
+    <string name="sign_up">sign up</string>
+    <string name="login_here">Login here!</string>
 </resources>
