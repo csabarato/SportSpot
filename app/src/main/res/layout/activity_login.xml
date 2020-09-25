@@ -25,66 +25,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/loginEmailLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="36dp"
-        android:fontFamily="sans-serif-condensed"
-        android:shadowColor="#C3FFFFFF"
-        android:text="@string/label_email"
-        android:textColor="#C3FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_title_text_view" />
 
-    <EditText
-        android:id="@+id/loginEmailEditText"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginEmailInputLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:theme="@style/InputEditTextTheme"
-        android:ems="10"
-        android:includeFontPadding="false"
-        android:inputType="textEmailAddress"
-        android:shadowColor="@color/colorSecondary"
-        android:textColor="@color/colorSecondary"
-        android:textColorHint="@color/colorSecondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginEmailLabel" />
+        android:hint="@string/label_email"
+        app:layout_constraintTop_toBottomOf="@id/app_title_text_view"
+        android:layout_margin="30dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <TextView
-        android:id="@+id/loginPasswordLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="100dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="36dp"
-        android:fontFamily="sans-serif-condensed"
-        android:shadowColor="#C3FFFFFF"
-        android:text="@string/label_password"
-        android:textColor="#C3FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginEmailEditText" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/loginEmailEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/loginPasswordEditText"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginPasswordInputLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:theme="@style/InputEditTextTheme"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:shadowColor="@color/colorSecondary"
-        android:textColor="@color/colorSecondary"
-        android:textColorHint="@color/colorSecondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordLabel" />
+        android:hint="@string/label_password"
+        app:layout_constraintTop_toBottomOf="@id/loginEmailInputLayout"
+        android:layout_margin="30dp"
+        app:endIconMode="password_toggle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/loginPasswordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
 
     <com.google.android.gms.common.SignInButton
@@ -97,7 +73,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/loginButton"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/loginPasswordInputLayout" />
 
     <Button
         android:id="@+id/loginButton"
@@ -106,9 +82,22 @@
         app:layout_constraintEnd_toStartOf="@+id/googleLoginButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordEditText"
+        app:layout_constraintTop_toBottomOf="@+id/loginPasswordInputLayout"
         style="@style/btn_simple"
         />
+
+    <TextView
+        android:id="@+id/toRegistrationLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="navigateToRegisterActivity"
+        android:text="@string/register_here"
+        android:textColor="@color/colorSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/googleLoginButton" />
 
     <ProgressBar
         android:id="@+id/loginProgressBar"
@@ -123,18 +112,7 @@
         app:layout_constraintTop_toBottomOf="@+id/toRegistrationLink"
         app:layout_constraintVertical_bias="0.234" />
 
-    <TextView
-        android:id="@+id/toRegistrationLink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:onClick="navigateToRegisterActivity"
-        android:text="@string/register_here"
-        android:textColor="@color/colorSecondary"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/googleLoginButton" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
