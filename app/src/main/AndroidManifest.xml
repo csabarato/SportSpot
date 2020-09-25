@@ -9,9 +9,16 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".auth.RegisterActivity"/>
-        <activity android:name=".auth.LoginActivity">
+        android:theme="@style/Theme.MaterialComponents">
+        <activity android:name=".main_menu.MainMenuActivity"/>
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

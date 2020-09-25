@@ -6,4 +6,24 @@
     <string name="register_here">Register here!</string>
     <string name="sign_up">sign up</string>
     <string name="login_here">Login here!</string>
+
+    <!--Authentication strings-->
+    <string name="signup_error">Signup error. Please try again!</string>
+    <string name="login_error">Login error. Please try again!</string>
+
+    <string name="no_interner_error_message">Failed to connect to internet. Please check your network connection</string>
+    <string name="no_interner_error_title">Network connection error</string>
+
+    <string name="password_weak_msg">Password is too weak. It should be 6 characters at least.</string>
+    <string name="invalid_email_format_msg">Invalid email address format.</string>
+    <string name="email_collision_msg">User already exists with this email address.</string>
+
+    <string name="login_invalid_credentials_msg">Incorrect email address or password.</string>
+    <string name="no_email_registered_msg">There is no user registered with this email.</string>
+
+    <string name="google_signin_error">Google sign in error</string>
+
+
+
+
 </resources>

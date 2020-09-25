@@ -17,4 +17,13 @@
         <item name="android:paddingBottom">15dip</item>
     </style>
 
+    <style name="InputEditTextTheme" parent="Widget.AppCompat.EditText">
+        <item name="colorControlActivated">#FFFFFF</item>
+        <item name="colorControlNormal">#FFFFFFFF</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>
