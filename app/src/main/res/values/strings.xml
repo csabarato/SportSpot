@@ -23,7 +23,16 @@
 
     <string name="google_signin_error">Google sign in error</string>
 
+    <!-- Main menu items strings -->
+    <string name="menu_profile">My profile</string>
+    <string name="menu_activities">Activities</string>
+    <string name="menu_new_activity">New activity</string>
+    <string name="menu_pitches">Pithces</string>
 
+    <!-- Navigation drawer open - close Description -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="logout">Logout</string>
 
 
 </resources>

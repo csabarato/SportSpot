@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu_profile" />
+
+    <item
+        android:id="@+id/activities"
+        android:icon="@drawable/ic_menu_avtivities"
+        android:title="@string/menu_activities" />
+
+    <item
+        android:id="@+id/new_activity"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu_new_activity" />
+
+    <item
+        android:id="@+id/pitches"
+        android:icon="@drawable/ic_menu_pitches"
+        android:title="@string/menu_pitches" />
+</menu>
