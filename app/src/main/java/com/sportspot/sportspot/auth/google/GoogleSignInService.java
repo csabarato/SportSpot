@@ -8,12 +8,13 @@ import android.view.View;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.sportspot.sportspot.R;
 
 public class GoogleSignInService implements View.OnClickListener {
 
     private Activity activity;
     private GoogleSignInClient googleSignInClient;
-    private static GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+    private static GoogleSignInOptions gso = null;
 
     // Request codes
     public static final Integer GOOGLE__SIGN_IN_RC = 1;
@@ -23,15 +24,19 @@ public class GoogleSignInService implements View.OnClickListener {
         this.activity = activity;
     }
 
-    public static GoogleSignInOptions getGsoInstance() {
+    public static GoogleSignInOptions getGsoInstance(Context context) {
         if (gso == null) {
-            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestIdToken(context.getString(R.string.default_web_client_id))
+                    .build();
+            return gso;
         }
         return gso;
     }
 
     public GoogleSignInClient getGoogleSignInClient(Context context) {
-            googleSignInClient = GoogleSignIn.getClient(context, getGsoInstance());
+            googleSignInClient = GoogleSignIn.getClient(context, getGsoInstance(context));
             return googleSignInClient;
     }
 

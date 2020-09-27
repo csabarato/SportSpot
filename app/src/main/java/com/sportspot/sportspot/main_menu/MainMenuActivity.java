@@ -8,16 +8,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.LoginActivity;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.menus.profile.UserProfileActivity;
 import com.sportspot.sportspot.utils.SideNavDrawer;
 
 public class MainMenuActivity extends AppCompatActivity {
@@ -35,7 +38,8 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInService.getGsoInstance());
+
+        googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInService.getGsoInstance(getApplicationContext()));
 
         toolbar = findViewById(R.id.app_toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -43,6 +47,9 @@ public class MainMenuActivity extends AppCompatActivity {
         // setup Main menu nav drawer
         new SideNavDrawer(this, toolbar, drawerLayout, this.createOnNavItemSelectedListener());
 
+        if (GoogleSignIn.getLastSignedInAccount(this) != null) {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        }
     }
 
     public NavigationView.OnNavigationItemSelectedListener createOnNavItemSelectedListener() {
@@ -54,6 +61,8 @@ public class MainMenuActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.profile:
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+                        finish();
                         return true;
                     case R.id.activities:
                         drawerLayout.closeDrawer(GravityCompat.START);
