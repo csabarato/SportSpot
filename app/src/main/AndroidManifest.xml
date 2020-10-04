@@ -10,9 +10,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".menus.profile.UserProfileActivity"
-            android:parentActivityName=".main_menu.MainMenuActivity"/>
-        <activity android:name=".main_menu.MainMenuActivity" />
+
+        <activity
+            android:name=".main_menu.MainMenuActivity"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".menus.profile.UserProfileActivity"
+            android:parentActivityName=".main_menu.MainMenuActivity"
+            android:launchMode="singleTask">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main_menu.MainMenuActivity" />
+        </activity>
+
         <activity
             android:name=".auth.RegisterActivity"
             android:configChanges="keyboardHidden|orientation"

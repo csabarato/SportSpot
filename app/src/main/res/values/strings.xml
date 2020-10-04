@@ -32,9 +32,11 @@
     <!-- Navigation drawer open - close Description -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
     <string name="logout">Logout</string>
     <string name="email_card_title">Email</string>
     <string name="name_card_title">Name</string>
-
+    <string name="welcome_message"> Hello, "%1$s" !</string>
 
 </resources>

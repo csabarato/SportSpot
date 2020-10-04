@@ -20,11 +20,11 @@ public class UserProfileActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
     // Layout element definitions
-    MaterialCardView emailCardView;
-    TextView emailCardText;
+    private MaterialCardView emailCardView;
+    private TextView emailCardText;
 
-    MaterialCardView nameCardView;
-    TextView nameCardText;
+    private MaterialCardView nameCardView;
+    private TextView nameCardText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

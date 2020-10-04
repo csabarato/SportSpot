@@ -8,9 +8,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -22,15 +23,20 @@ import com.sportspot.sportspot.auth.LoginActivity;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.menus.profile.UserProfileActivity;
 import com.sportspot.sportspot.utils.SideNavDrawer;
+import com.squareup.picasso.Picasso;
 
 public class MainMenuActivity extends AppCompatActivity {
 
 
     private FirebaseAuth firebaseAuth;
 
+    // Layout element definitions
     private GoogleSignInClient googleSignInClient;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
+
+    private TextView navHeaderText;
+    private ImageView navHeaderImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +47,42 @@ public class MainMenuActivity extends AppCompatActivity {
 
         googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInService.getGsoInstance(getApplicationContext()));
 
+        // Inflate NavHeader into NavView
+        NavigationView navView = findViewById(R.id.nav_view_main_menu);
+        View headerView = navView.inflateHeaderView(R.layout.nav_header_main_menu);
+
+        // Get layout elements
         toolbar = findViewById(R.id.app_toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
+        navHeaderText = headerView.findViewById(R.id.nav_header_menu_text);
+        navHeaderImage = headerView.findViewById(R.id.nav_header_menu_image);
 
         // setup Main menu nav drawer
         new SideNavDrawer(this, toolbar, drawerLayout, this.createOnNavItemSelectedListener());
 
         if (GoogleSignIn.getLastSignedInAccount(this) != null) {
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+            if (account != null) {
+                setNavHeaderImageAndTextByGoogleAccount(account);
+            }
+        }
+    }
+
+    private void setNavHeaderImageAndTextByGoogleAccount(GoogleSignInAccount account) {
+
+        if (account.getPhotoUrl() != null) {
+            account.getPhotoUrl();
+
+            // Load image to ImageView by URL
+            Picasso.get().load(account.getPhotoUrl())
+                    .placeholder(android.R.drawable.sym_def_app_icon)
+                    .error(android.R.drawable.sym_def_app_icon)
+                    .resize(200,200)
+                    .into(navHeaderImage);
+        }
+        if (account.getGivenName() != null) {
+            navHeaderText.setText(String.format(getString(R.string.welcome_message),account.getGivenName()));
         }
     }
 
@@ -62,7 +96,6 @@ public class MainMenuActivity extends AppCompatActivity {
                     case R.id.profile:
                         drawerLayout.closeDrawer(GravityCompat.START);
                         startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
-                        finish();
                         return true;
                     case R.id.activities:
                         drawerLayout.closeDrawer(GravityCompat.START);
