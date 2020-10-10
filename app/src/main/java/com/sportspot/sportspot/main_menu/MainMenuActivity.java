@@ -3,10 +3,14 @@ package com.sportspot.sportspot.main_menu;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.LoginActivity;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.menus.activity_map.ActivitiesMapActivity;
 import com.sportspot.sportspot.menus.profile.UserProfileActivity;
+import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.SideNavDrawer;
 import com.squareup.picasso.Picasso;
 
@@ -32,11 +38,12 @@ public class MainMenuActivity extends AppCompatActivity {
 
     // Layout element definitions
     private GoogleSignInClient googleSignInClient;
-    private Toolbar toolbar;
     private DrawerLayout drawerLayout;
 
     private TextView navHeaderText;
     private ImageView navHeaderImage;
+
+    private static int ACTIVITIES_MAP_REQUEST_PERMISSION_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +59,7 @@ public class MainMenuActivity extends AppCompatActivity {
         View headerView = navView.inflateHeaderView(R.layout.nav_header_main_menu);
 
         // Get layout elements
-        toolbar = findViewById(R.id.app_toolbar);
+        Toolbar toolbar = findViewById(R.id.app_toolbar);
         drawerLayout = findViewById(R.id.drawer_layout);
         navHeaderText = headerView.findViewById(R.id.nav_header_menu_text);
         navHeaderImage = headerView.findViewById(R.id.nav_header_menu_image);
@@ -97,8 +104,9 @@ public class MainMenuActivity extends AppCompatActivity {
                         drawerLayout.closeDrawer(GravityCompat.START);
                         startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
                         return true;
-                    case R.id.activities:
+                    case R.id.activities_map:
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        startActivitesMapActivity();
                         return true;
                     case R.id.new_activity:
                         drawerLayout.closeDrawer(GravityCompat.START);
@@ -123,5 +131,34 @@ public class MainMenuActivity extends AppCompatActivity {
 
         firebaseAuth.signOut();
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    }
+
+    private void startActivitesMapActivity() {
+
+        // Check if necessary permissions is granted.
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            startActivity(new Intent(getApplicationContext(), ActivitiesMapActivity.class));
+        // Request for needed permissions
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACTIVITIES_MAP_REQUEST_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == ACTIVITIES_MAP_REQUEST_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startActivity(new Intent(getApplicationContext(), ActivitiesMapActivity.class));
+            } else {
+                DialogUtils.buildAlertDialog(getString(R.string.location_denied_aware_title),
+                        getString(R.string.location_denied_aware_message),
+                        MainMenuActivity.this).show();
+            }
+        }
     }
 }

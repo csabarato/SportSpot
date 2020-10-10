@@ -25,7 +25,7 @@
 
     <!-- Main menu items strings -->
     <string name="menu_profile">My profile</string>
-    <string name="menu_activities">Activities</string>
+    <string name="menu_activities_map">Activities map</string>
     <string name="menu_new_activity">New activity</string>
     <string name="menu_pitches">Pithces</string>
 
@@ -38,5 +38,13 @@
     <string name="email_card_title">Email</string>
     <string name="name_card_title">Name</string>
     <string name="welcome_message"> Hello, "%1$s" !</string>
+
+    <!--Dialog messages-->
+    <string name="location_denied_aware_title">Location permission is not allowed for this application.</string>
+    <string name="location_denied_aware_message">If you would like to access this feature, please enable Location permission in Settings.</string>
+
+    <string name="location_unavailable_title">Location not found</string>
+    <string name="location_unavailable_message">Please check that location is enabled"</string>
+
 
 </resources>

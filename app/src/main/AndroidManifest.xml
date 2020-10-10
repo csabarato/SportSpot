@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sportspot.sportspot">
 
+    <!--Permissions-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"  />
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
@@ -15,10 +21,21 @@
             android:name=".main_menu.MainMenuActivity"
             android:launchMode="singleTop" />
 
+        <!--Activities of Menu points-->
         <activity
             android:name=".menus.profile.UserProfileActivity"
-            android:parentActivityName=".main_menu.MainMenuActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:parentActivityName=".main_menu.MainMenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main_menu.MainMenuActivity" />
+        </activity>
+
+        <activity
+            android:name=".menus.activity_map.ActivitiesMapActivity"
+            android:launchMode="singleTask"
+            android:parentActivityName=".main_menu.MainMenuActivity">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".main_menu.MainMenuActivity" />
@@ -27,10 +44,12 @@
         <activity
             android:name=".auth.RegisterActivity"
             android:configChanges="keyboardHidden|orientation"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".auth.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
+            android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
