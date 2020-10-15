@@ -17,7 +17,7 @@ public class KeyboardUtils {
         };
     }
 
-    public static void hideKeyboard(View view, Activity activity) {
+    private static void hideKeyboard(View view, Activity activity) {
         InputMethodManager inputMethodManager =(InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }

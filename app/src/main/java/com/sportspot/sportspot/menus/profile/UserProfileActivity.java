@@ -48,12 +48,12 @@ public class UserProfileActivity extends AppCompatActivity {
         } else if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             setupProfileDetails(FirebaseAuth.getInstance().getCurrentUser());
         } else {
-            DialogUtils.buildAlertDialog("Authentication error", "No current user logged in", UserProfileActivity.this).show();
+            DialogUtils.buildAlertDialog(getString(R.string.auth_error_title),getString(R.string.no_authorized_user_message), UserProfileActivity.this).show();
         }
     }
 
     private void setToolbar() {
-        toolbar.setTitle("Profile");
+        toolbar.setTitle(getString(R.string.menu_profile));
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {

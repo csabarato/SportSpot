@@ -23,9 +23,13 @@
 
     <string name="google_signin_error">Google sign in error</string>
 
+    <string name="auth_error_title">Authentication error</string>
+
+    <string name="no_authorized_user_message">No current user logged in</string>
+
     <!-- Main menu items strings -->
     <string name="menu_profile">My profile</string>
-    <string name="menu_activities_map">Activities map</string>
+    <string name="menu_activities_map">Map of activities</string>
     <string name="menu_new_activity">New activity</string>
     <string name="menu_pitches">Pithces</string>
 

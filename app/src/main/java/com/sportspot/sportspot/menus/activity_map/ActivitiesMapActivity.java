@@ -60,7 +60,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
     private void setToolbar() {
         Toolbar toolbar = findViewById(R.id.app_toolbar);
-        toolbar.setTitle("Map of activities");
+        toolbar.setTitle(getString(R.string.menu_activities_map));
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
