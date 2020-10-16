@@ -26,6 +26,7 @@ import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.LoginActivity;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.menus.activity_map.ActivitiesMapActivity;
+import com.sportspot.sportspot.menus.new_activity.NewActivityAcitvity;
 import com.sportspot.sportspot.menus.profile.UserProfileActivity;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.SideNavDrawer;
@@ -110,6 +111,7 @@ public class MainMenuActivity extends AppCompatActivity {
                         return true;
                     case R.id.new_activity:
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class));
                         return true;
                     case R.id.pitches:
                         drawerLayout.closeDrawer(GravityCompat.START);

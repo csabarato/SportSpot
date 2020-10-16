@@ -33,6 +33,10 @@
     <string name="menu_new_activity">New activity</string>
     <string name="menu_pitches">Pithces</string>
 
+    <!--New activity tab titles-->
+    <string name="tab_activity_details">Activity details</string>
+    <string name="tab_activity_location">Activity location</string>
+
     <!-- Navigation drawer open - close Description -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -49,6 +53,7 @@
 
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>
+
 
 
 </resources>
