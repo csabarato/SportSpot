@@ -30,12 +30,28 @@
     <!-- Main menu items strings -->
     <string name="menu_profile">My profile</string>
     <string name="menu_activities_map">Map of activities</string>
-    <string name="menu_new_activity">New activity</string>
+    <string name="menu_new_activity">Add new activity</string>
     <string name="menu_pitches">Pithces</string>
 
-    <!--New activity tab titles-->
-    <string name="tab_activity_details">Activity details</string>
-    <string name="tab_activity_location">Activity location</string>
+    <!--New activity - Details page -->
+    <string name="new_activity_detail_header"> Add the details of your activity </string>
+    <string name="new_activity_detail_description"> Description </string>
+    <string name="new_activity_next_btn"> Next </string>
+
+    <!--Sport type select-->
+    <string name="sport_select_hint">Select a sport</string>
+    <string-array name="sport_type_items_array">
+        <item>Basketball</item>
+        <item>Football</item>
+        <item>Table tennis</item>
+        <item>Tennis</item>
+        <item>Teqball</item>
+    </string-array>
+
+
+    <!--New activity - Location page -->
+    <string name="new_activity_loaction_back_btn"> Back </string>
+    <string name="new_activity_loaction_submit_btn"> Submit new activity </string>
 
     <!-- Navigation drawer open - close Description -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
