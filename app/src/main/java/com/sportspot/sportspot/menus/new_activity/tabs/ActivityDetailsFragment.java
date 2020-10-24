@@ -59,7 +59,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         Button nextToLocationButton = view.findViewById(R.id.next_to_location_button);
 
         activityDescEditText = view.findViewById(R.id.activity_desc);
-        activityDescEditText.addTextChangedListener(this.activityDescriptionTextWatcher);
         activityDescInputLayout = view.findViewById(R.id.activity_desc_input_layout);
 
         sportTypeDropdown = view.findViewById(R.id.sport_type_dropdown);
@@ -100,21 +99,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         validateSportTypeDropdown();
     }
 
-    private final TextWatcher activityDescriptionTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            validateActivityDescInput();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
     @Override
     public void onClick(View v) {
 
@@ -138,10 +122,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private void showDatePickerDialog() {
 
-        if (activityDetailsViewModel.getStartDate() != null) {
-            startDatetimeCalendar.setTime(activityDetailsViewModel.getStartDate());
-        }
-
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Material_Dialog,
                 (view, year, month, dayOfMonth) -> {
 
@@ -149,8 +129,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
                 startDatetimeCalendar.set(Calendar.MONTH, month);
                 startDatetimeCalendar.set(Calendar.DATE, dayOfMonth);
 
-                activityDetailsViewModel.setStartDate(new Date(startDatetimeCalendar.getTimeInMillis()));
-                startDateEditText.setText(startDateFormatter.format(activityDetailsViewModel.getStartDate()));
+                startDateEditText.setText(startDateFormatter.format(startDatetimeCalendar.getTime()));
                 validateStartDateInput();
                 }, startDatetimeCalendar.get(Calendar.YEAR), startDatetimeCalendar.get(Calendar.MONTH), startDatetimeCalendar.get(Calendar.DATE));
 
@@ -160,18 +139,13 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private void showTimePickerDialog() {
 
-        if (activityDetailsViewModel.getStartDate() != null) {
-            startDatetimeCalendar.setTime(activityDetailsViewModel.getStartDate());
-        }
-
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
                 (view, hourOfDay, minute) -> {
 
                 startDatetimeCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 startDatetimeCalendar.set(Calendar.MINUTE, minute);
 
-                activityDetailsViewModel.setStartDate(startDatetimeCalendar.getTime());
-                startTimeEditText.setText(startTimeFormatter.format(activityDetailsViewModel.getStartDate()));
+                startTimeEditText.setText(startTimeFormatter.format(startDatetimeCalendar.getTime()));
                 validateStartTimeInput();
                 }, startDatetimeCalendar.get(Calendar.HOUR_OF_DAY), startDatetimeCalendar.get(Calendar.MINUTE), true);
 
@@ -181,19 +155,9 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
     private void validateData() {
         isDetailsFormValid = true;
 
-        validateActivityDescInput();
         validateSportTypeDropdown();
         validateStartDateInput();
         validateStartTimeInput();
-    }
-
-    private void validateActivityDescInput() {
-        if (activityDescEditText.getText() == null || activityDescEditText.getText().toString().isEmpty()) {
-            activityDescInputLayout.setError(getString(R.string.new_activity_desc_required));
-            isDetailsFormValid = false;
-        } else {
-            activityDescInputLayout.setError(null);
-        }
     }
 
     private void validateSportTypeDropdown() {
@@ -226,9 +190,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
     private void saveData() {
 
         activityDetailsViewModel.setSportType(selectedSportType);
-
+        activityDetailsViewModel.setStartDate(startDatetimeCalendar);
         activityDetailsViewModel.setDescription(activityDescEditText.getText().toString());
-
-
     }
 }

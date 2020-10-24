@@ -2,7 +2,7 @@ package com.sportspot.sportspot.view_model;
 
 import androidx.lifecycle.ViewModel;
 
-import java.util.Date;
+import java.util.Calendar;
 
 public class ActivityDetailsViewModel extends ViewModel {
 
@@ -10,7 +10,7 @@ public class ActivityDetailsViewModel extends ViewModel {
     private String sportType;
     private float locationLat;
     private float locationLon;
-    private Date startDate;
+    private Calendar startDate;
 
     public String getDescription() {
         return description;
@@ -44,11 +44,11 @@ public class ActivityDetailsViewModel extends ViewModel {
         this.locationLon = locationLon;
     }
 
-    public Date getStartDate() {
+    public Calendar getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Calendar startDate) {
         this.startDate = startDate;
     }
 }
