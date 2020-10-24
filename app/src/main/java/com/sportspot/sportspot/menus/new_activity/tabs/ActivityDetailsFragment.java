@@ -1,5 +1,6 @@
 package com.sportspot.sportspot.menus.new_activity.tabs;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,16 +25,23 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    private EditText activityDescEditText;
+    private EditText activityDescEditText, startDateEditText;
+    private ImageView startDatePickerIcon;
     private ActivityDetailsViewModel activityDetailsViewModel;
     private AutoCompleteTextView sportTypeDropdown;
     private String selectedSportType = null;
     private boolean isDetailsFormValid;
 
-    private TextInputLayout sportTypeInputLayout;
-    private TextInputLayout activityDescInputLayout;
+    private TextInputLayout sportTypeInputLayout, activityDescInputLayout, startDateInputLayout;
+
+    private final SimpleDateFormat startDateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     public ActivityDetailsFragment() {
     }
@@ -47,12 +56,19 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         activityDescEditText = view.findViewById(R.id.activity_desc);
         activityDescEditText.addTextChangedListener(this.activityDescriptionTextWatcher);
-
         activityDescInputLayout = view.findViewById(R.id.activity_desc_input_layout);
 
         sportTypeDropdown = view.findViewById(R.id.sport_type_dropdown);
         sportTypeInputLayout = view.findViewById(R.id.sport_type_input_layout);
-        
+
+
+        startDateEditText = view.findViewById(R.id.start_date);
+        startDateEditText.setOnClickListener(this);
+        startDateInputLayout = view.findViewById(R.id.start_date_input_layout);
+
+        startDatePickerIcon = view.findViewById(R.id.start_date_picker_icon);
+        startDatePickerIcon.setOnClickListener(this);
+
         setupSportTypeDropdown();
 
         activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
@@ -63,17 +79,42 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.next_to_location_button:
-                validateData();
-                if (isDetailsFormValid) {
-                    saveData();
-                    NavHostFragment.findNavController(ActivityDetailsFragment.this)
-                            .navigate(R.id.action_Details_to_Location);
-                }
 
-                break;
+        int viewId = v.getId();
+
+        if (viewId == R.id.next_to_location_button) {
+            validateData();
+            if (isDetailsFormValid) {
+                saveData();
+                NavHostFragment.findNavController(ActivityDetailsFragment.this)
+                        .navigate(R.id.action_Details_to_Location);
+            }
         }
+        else if (viewId == R.id.start_date || viewId == R.id.start_date_picker_icon) {
+            showDatePickerDialog();
+        }
+    }
+
+    private void showDatePickerDialog() {
+
+        final Calendar cal = Calendar.getInstance();
+
+        if (activityDetailsViewModel.getStartDate() != null) {
+            cal.setTime(activityDetailsViewModel.getStartDate());
+        }
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Material_Dialog,
+                (view, year, month, dayOfMonth) -> {
+                Calendar startDateCal = Calendar.getInstance();
+                startDateCal.set(year, month, dayOfMonth);
+
+                activityDetailsViewModel.setStartDate(new Date(startDateCal.getTimeInMillis()));
+                startDateEditText.setText(startDateFormatter.format(activityDetailsViewModel.getStartDate()));
+                validateStartDateInput();
+                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+
+        datePickerDialog.show();
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
     }
 
     private void validateData() {
@@ -81,6 +122,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         validateActivityDescInput();
         validateSportTypeDropdown();
+        validateStartDateInput();
     }
 
     private void validateActivityDescInput() {
@@ -98,6 +140,15 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
             isDetailsFormValid = false;
         } else {
             sportTypeInputLayout.setError(null);
+        }
+    }
+
+    private void validateStartDateInput() {
+        if (startDateEditText.getText() == null || startDateEditText.getText().toString().isEmpty()) {
+            startDateInputLayout.setError(getString(R.string.new_activity_start_date_required));
+            isDetailsFormValid = false;
+        } else {
+            startDateInputLayout.setError(null);
         }
     }
 

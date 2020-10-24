@@ -2,12 +2,15 @@ package com.sportspot.sportspot.view_model;
 
 import androidx.lifecycle.ViewModel;
 
+import java.util.Date;
+
 public class ActivityDetailsViewModel extends ViewModel {
 
     private String description;
     private String sportType;
     private float locationLat;
     private float locationLon;
+    private Date startDate;
 
     public String getDescription() {
         return description;
@@ -39,5 +42,13 @@ public class ActivityDetailsViewModel extends ViewModel {
 
     public void setLocationLon(float locationLon) {
         this.locationLon = locationLon;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 }

@@ -39,6 +39,9 @@
     <string name="new_activity_next_btn"> Next </string>
     <string name="new_activity_desc_required"> Activity description is required</string>
     <string name="new_activity_sport_required"> Sport type is required</string>
+    <string name="new_activity_start_date_hint">Select a date</string>
+    <string name="new_activity_start_date_required">Start date is required</string>
+
 
 
     <!--Sport type select-->
