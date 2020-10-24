@@ -1,6 +1,7 @@
 package com.sportspot.sportspot.menus.new_activity.tabs;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,16 +33,19 @@ import java.util.Locale;
 
 public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    private EditText activityDescEditText, startDateEditText;
-    private ImageView startDatePickerIcon;
+    private EditText activityDescEditText, startDateEditText, startTimeEditText;
+    private ImageView startDatePickerIcon, startTimePickerIcon;
     private ActivityDetailsViewModel activityDetailsViewModel;
     private AutoCompleteTextView sportTypeDropdown;
     private String selectedSportType = null;
     private boolean isDetailsFormValid;
 
-    private TextInputLayout sportTypeInputLayout, activityDescInputLayout, startDateInputLayout;
+    private TextInputLayout sportTypeInputLayout, activityDescInputLayout, startDateInputLayout, startTimeInputLayout;
+    
+    private Calendar startDatetimeCalendar = Calendar.getInstance();
 
     private final SimpleDateFormat startDateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat startTimeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     public ActivityDetailsFragment() {
     }
@@ -69,6 +73,13 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         startDatePickerIcon = view.findViewById(R.id.start_date_picker_icon);
         startDatePickerIcon.setOnClickListener(this);
 
+        startTimeEditText = view.findViewById(R.id.start_time);
+        startTimeEditText.setOnClickListener(this);
+        startTimeInputLayout = view.findViewById(R.id.start_time_input_layout);
+
+        startTimePickerIcon = view.findViewById(R.id.start_time_picker_icon);
+        startTimePickerIcon.setOnClickListener(this);
+
         setupSportTypeDropdown();
 
         activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
@@ -76,6 +87,33 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         return view;
     }
 
+    private void setupSportTypeDropdown() {
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.sport_type_items_array, R.layout.sport_type_dropdown_item);
+        sportTypeDropdown.setAdapter(adapter);
+        sportTypeDropdown.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectedSportType = parent.getItemAtPosition(position).toString();
+        validateSportTypeDropdown();
+    }
+
+    private final TextWatcher activityDescriptionTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            validateActivityDescInput();
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -93,28 +131,51 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         else if (viewId == R.id.start_date || viewId == R.id.start_date_picker_icon) {
             showDatePickerDialog();
         }
+        else if (viewId == R.id.start_time_picker_icon || viewId == R.id.start_time) {
+            showTimePickerDialog();
+        }
     }
 
     private void showDatePickerDialog() {
 
-        final Calendar cal = Calendar.getInstance();
-
         if (activityDetailsViewModel.getStartDate() != null) {
-            cal.setTime(activityDetailsViewModel.getStartDate());
+            startDatetimeCalendar.setTime(activityDetailsViewModel.getStartDate());
         }
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Material_Dialog,
                 (view, year, month, dayOfMonth) -> {
-                Calendar startDateCal = Calendar.getInstance();
-                startDateCal.set(year, month, dayOfMonth);
 
-                activityDetailsViewModel.setStartDate(new Date(startDateCal.getTimeInMillis()));
+                startDatetimeCalendar.set(Calendar.YEAR, year);
+                startDatetimeCalendar.set(Calendar.MONTH, month);
+                startDatetimeCalendar.set(Calendar.DATE, dayOfMonth);
+
+                activityDetailsViewModel.setStartDate(new Date(startDatetimeCalendar.getTimeInMillis()));
                 startDateEditText.setText(startDateFormatter.format(activityDetailsViewModel.getStartDate()));
                 validateStartDateInput();
-                }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
+                }, startDatetimeCalendar.get(Calendar.YEAR), startDatetimeCalendar.get(Calendar.MONTH), startDatetimeCalendar.get(Calendar.DATE));
 
         datePickerDialog.show();
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+    }
+
+    private void showTimePickerDialog() {
+
+        if (activityDetailsViewModel.getStartDate() != null) {
+            startDatetimeCalendar.setTime(activityDetailsViewModel.getStartDate());
+        }
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                (view, hourOfDay, minute) -> {
+
+                startDatetimeCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                startDatetimeCalendar.set(Calendar.MINUTE, minute);
+
+                activityDetailsViewModel.setStartDate(startDatetimeCalendar.getTime());
+                startTimeEditText.setText(startTimeFormatter.format(activityDetailsViewModel.getStartDate()));
+                validateStartTimeInput();
+                }, startDatetimeCalendar.get(Calendar.HOUR_OF_DAY), startDatetimeCalendar.get(Calendar.MINUTE), true);
+
+        timePickerDialog.show();
     }
 
     private void validateData() {
@@ -123,6 +184,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         validateActivityDescInput();
         validateSportTypeDropdown();
         validateStartDateInput();
+        validateStartTimeInput();
     }
 
     private void validateActivityDescInput() {
@@ -135,7 +197,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
     }
 
     private void validateSportTypeDropdown() {
-        if (selectedSportType == null) {
+        if (selectedSportType == null || selectedSportType.isEmpty()) {
             sportTypeInputLayout.setError(getString(R.string.new_activity_sport_required));
             isDetailsFormValid = false;
         } else {
@@ -152,42 +214,21 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    private void validateStartTimeInput() {
+        if (startTimeEditText.getText() == null || startTimeEditText.getText().toString().isEmpty()) {
+            startTimeInputLayout.setError(getString(R.string.new_activity_start_time_required));
+            isDetailsFormValid = false;
+        } else {
+            startTimeInputLayout.setError(null);
+        }
+    }
+
     private void saveData() {
 
-        if (!activityDescEditText.getText().toString().isEmpty()) {
-            activityDetailsViewModel.setDescription(activityDescEditText.getText().toString());
-        }
+        activityDetailsViewModel.setSportType(selectedSportType);
 
-        if (selectedSportType == null || !selectedSportType.isEmpty()) {
-            activityDetailsViewModel.setSportType(selectedSportType);
-        }
+        activityDetailsViewModel.setDescription(activityDescEditText.getText().toString());
+
+
     }
-
-    private void setupSportTypeDropdown() {
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.sport_type_items_array, R.layout.sport_type_dropdown_item);
-        sportTypeDropdown.setAdapter(adapter);
-        sportTypeDropdown.setOnItemClickListener(this);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        selectedSportType = parent.getItemAtPosition(position).toString();
-        validateSportTypeDropdown();
-    }
-
-    private TextWatcher activityDescriptionTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            validateActivityDescInput();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 }

@@ -42,6 +42,8 @@
     <string name="new_activity_start_date_hint">Select a date</string>
     <string name="new_activity_start_date_required">Start date is required</string>
 
+    <string name="new_activity_start_time_hint">Select start time</string>
+    <string name="new_activity_start_time_required">Start time is required</string>
 
 
     <!--Sport type select-->
