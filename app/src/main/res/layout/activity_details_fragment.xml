@@ -134,6 +134,26 @@
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/activity_persons_num_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_num_of_persons"
+                android:layout_margin="30dp"
+                android:hint="@string/new_activity_num_of_persons_hint"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/activity_persons_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:gravity="start|top"
+                    android:ems="10"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/activity_desc_input_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"

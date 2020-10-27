@@ -45,6 +45,8 @@
     <string name="new_activity_start_time_hint">Select start time</string>
     <string name="new_activity_start_time_required">Start time is required</string>
 
+    <string name="new_activity_num_of_persons_hint">Num of persons</string>
+    <string name="new_activity_num_of_persons_required">Num of persons</string>
 
     <!--Sport type select-->
     <string name="sport_select_hint">Select a sport</string>
@@ -77,7 +79,6 @@
 
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>
-
 
 
 </resources>

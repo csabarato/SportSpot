@@ -24,6 +24,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.utils.TextValidator;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import java.text.SimpleDateFormat;
@@ -33,14 +34,15 @@ import java.util.Locale;
 
 public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    private EditText activityDescEditText, startDateEditText, startTimeEditText;
+    private EditText activityDescEditText, startDateEditText, startTimeEditText, numOfPersonsEditText;
     private ImageView startDatePickerIcon, startTimePickerIcon;
     private ActivityDetailsViewModel activityDetailsViewModel;
     private AutoCompleteTextView sportTypeDropdown;
     private String selectedSportType = null;
     private boolean isDetailsFormValid;
 
-    private TextInputLayout sportTypeInputLayout, activityDescInputLayout, startDateInputLayout, startTimeInputLayout;
+    private TextInputLayout sportTypeInputLayout, startDateInputLayout,
+            startTimeInputLayout, numOfPersonsInputLayout;
     
     private Calendar startDatetimeCalendar = Calendar.getInstance();
 
@@ -59,7 +61,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         Button nextToLocationButton = view.findViewById(R.id.next_to_location_button);
 
         activityDescEditText = view.findViewById(R.id.activity_desc);
-        activityDescInputLayout = view.findViewById(R.id.activity_desc_input_layout);
 
         sportTypeDropdown = view.findViewById(R.id.sport_type_dropdown);
         sportTypeInputLayout = view.findViewById(R.id.sport_type_input_layout);
@@ -78,6 +79,11 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         startTimePickerIcon = view.findViewById(R.id.start_time_picker_icon);
         startTimePickerIcon.setOnClickListener(this);
+
+        numOfPersonsEditText = view.findViewById(R.id.activity_persons_num);
+        numOfPersonsEditText.addTextChangedListener(initNumOfPersonsInputValidator(numOfPersonsEditText));
+
+        numOfPersonsInputLayout = view.findViewById(R.id.activity_persons_num_input_layout);
 
         setupSportTypeDropdown();
 
@@ -158,6 +164,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         validateSportTypeDropdown();
         validateStartDateInput();
         validateStartTimeInput();
+        validateNumOfPersonsInput();
     }
 
     private void validateSportTypeDropdown() {
@@ -185,6 +192,25 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         } else {
             startTimeInputLayout.setError(null);
         }
+    }
+
+    private void validateNumOfPersonsInput() {
+        if (numOfPersonsEditText.getText() == null || numOfPersonsEditText.getText().toString().isEmpty()) {
+            numOfPersonsInputLayout.setError(getString(R.string.new_activity_num_of_persons_required));
+            isDetailsFormValid = false;
+        } else {
+            numOfPersonsInputLayout.setError(null);
+        }
+    }
+
+    private TextWatcher initNumOfPersonsInputValidator(EditText editText) {
+
+        return new TextValidator(editText) {
+            @Override
+            public void validate(String text) {
+                validateNumOfPersonsInput();
+            }
+        };
     }
 
     private void saveData() {
