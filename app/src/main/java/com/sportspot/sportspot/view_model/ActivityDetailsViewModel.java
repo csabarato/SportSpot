@@ -11,7 +11,7 @@ public class ActivityDetailsViewModel extends ViewModel {
     private float locationLat;
     private float locationLon;
     private Calendar startDate;
-    private int numOfPersons;
+    private Integer numOfPersons;
 
     public String getDescription() {
         return description;
@@ -53,11 +53,11 @@ public class ActivityDetailsViewModel extends ViewModel {
         this.startDate = startDate;
     }
 
-    public int getNumOfPersons() {
+    public Integer getNumOfPersons() {
         return numOfPersons;
     }
 
-    public void setNumOfPersons(int numOfPersons) {
+    public void setNumOfPersons(Integer numOfPersons) {
         this.numOfPersons = numOfPersons;
     }
 }

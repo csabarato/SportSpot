@@ -1,9 +1,9 @@
 package com.sportspot.sportspot.menus.new_activity.tabs;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +29,6 @@ import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -88,14 +87,51 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         setupSportTypeDropdown();
 
         activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
+        if (activityDetailsViewModel != null) {
+            restoreDataFromViewModel(activityDetailsViewModel);
+        }
+
         nextToLocationButton.setOnClickListener(this);
         return view;
     }
 
+    private void restoreDataFromViewModel(ActivityDetailsViewModel adViewModel) {
+
+        if (adViewModel.getSportType() != null) {
+            selectedSportType = adViewModel.getSportType();
+            setupSportTypeDropdown(selectedSportType);
+        }
+
+        if (adViewModel.getStartDate() != null) {
+            startDatetimeCalendar = adViewModel.getStartDate();
+            startDateEditText.setText(startDateFormatter.format(startDatetimeCalendar.getTime()));
+            startTimeEditText.setText(startTimeFormatter.format(startDatetimeCalendar.getTime()));
+        }
+
+        if(adViewModel.getNumOfPersons() != null) {
+            numOfPersonsEditText.setText(adViewModel.getNumOfPersons().toString());
+        }
+
+        if (adViewModel.getDescription() !=  null) {
+            activityDescEditText.setText(adViewModel.getDescription());
+        }
+    }
+
     private void setupSportTypeDropdown() {
+        setupSportTypeDropdown(null);
+    }
+
+    @SuppressLint("NewApi")
+    private void setupSportTypeDropdown(String defaultValue) {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.sport_type_items_array, R.layout.sport_type_dropdown_item);
         sportTypeDropdown.setAdapter(adapter);
+
+        if (defaultValue != null) {
+            int position = adapter.getPosition(defaultValue);
+            sportTypeDropdown.setText(defaultValue, false);
+            sportTypeDropdown.setSelection(position);
+        }
         sportTypeDropdown.setOnItemClickListener(this);
     }
 
