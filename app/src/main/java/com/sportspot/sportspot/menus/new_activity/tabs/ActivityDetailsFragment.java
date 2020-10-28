@@ -217,6 +217,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         activityDetailsViewModel.setSportType(selectedSportType);
         activityDetailsViewModel.setStartDate(startDatetimeCalendar);
+        activityDetailsViewModel.setNumOfPersons(Integer.parseInt(numOfPersonsEditText.getText().toString()));
         activityDetailsViewModel.setDescription(activityDescEditText.getText().toString());
     }
 }
