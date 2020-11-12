@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
             );
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), LoginActivity.this).show();
         }
     }
 
@@ -112,13 +112,13 @@ public class LoginActivity extends AppCompatActivity {
         try {
             throw task.getException();
         } catch (FirebaseAuthInvalidCredentialsException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
         } catch (FirebaseAuthInvalidUserException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
         }
 
         catch (Exception e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error),e.getMessage(), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error),e.getMessage(), LoginActivity.this).show();
         } finally {
             progressBar.setVisibility(View.GONE);
         }
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
         } catch (ApiException e) {
             Log.d("Google error", e.getMessage());
-            DialogUtils.buildAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);
+            DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);
         }
     }
 

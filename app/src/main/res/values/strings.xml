@@ -61,7 +61,7 @@
 
     <!--New activity - Location page -->
     <string name="new_activity_loaction_back_btn"> Back </string>
-    <string name="new_activity_loaction_submit_btn"> Submit new activity </string>
+    <string name="new_activity_loaction_submit_btn"> Submit </string>
 
     <!-- Navigation drawer open - close Description -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -76,6 +76,7 @@
     <!--Dialog messages-->
     <string name="location_denied_aware_title">Location permission is not allowed for this application.</string>
     <string name="location_denied_aware_message">If you would like to access this feature, please enable Location permission in Settings.</string>
+    <string name="location_disallowed_warning_message">If you would like to use fully this feature, please enable Location permission in Settings. </string>
 
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>

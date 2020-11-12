@@ -42,11 +42,11 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         map.setMultiTouchControls(true);
 
-        IMapController mapController = map.getController();
-        mapController.setZoom(13d);
-
         addLocationOverlay();
         addCompassOverlay();
+
+        IMapController mapController = map.getController();
+        mapController.setZoom(13d);
 
         LocationProvider locationProvider = new LocationProvider(getApplicationContext());
 
@@ -54,7 +54,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             GeoPoint currentLocation = new GeoPoint(locationProvider.getCurrentLocation());
             map.getController().setCenter(currentLocation);
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
     }
 

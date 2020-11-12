@@ -44,7 +44,8 @@ public class MainMenuActivity extends AppCompatActivity {
     private TextView navHeaderText;
     private ImageView navHeaderImage;
 
-    private static int ACTIVITIES_MAP_REQUEST_PERMISSION_CODE = 1;
+    private static final int ACTIVITIES_MAP_REQUEST_PERMISSION_CODE = 1;
+    private static final int NEW_ACTIVITY_MAP_REQUEST_PERMISSION_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,25 +101,24 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                switch (item.getItemId()) {
-                    case R.id.profile:
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
-                        return true;
-                    case R.id.activities_map:
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        startActivitesMapActivity();
-                        return true;
-                    case R.id.new_activity:
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class));
-                        return true;
-                    case R.id.pitches:
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
+                int itemId = item.getItemId();
+                if (itemId == R.id.profile) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    startActivity(new Intent(getApplicationContext(), UserProfileActivity.class));
+                    return true;
+                } else if (itemId == R.id.activities_map) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    startActivitesMapActivity();
+                    return true;
+                } else if (itemId == R.id.new_activity) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    startAddNewActivityActivity();
+                    return true;
+                } else if (itemId == R.id.pitches) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
                 }
+                return false;
             }
         };
     }
@@ -148,6 +148,18 @@ public class MainMenuActivity extends AppCompatActivity {
         }
     }
 
+    private void startAddNewActivityActivity() {
+        // Check if necessary permissions is granted.
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class));
+            // Request for needed permissions
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    NEW_ACTIVITY_MAP_REQUEST_PERMISSION_CODE);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -157,9 +169,20 @@ public class MainMenuActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startActivity(new Intent(getApplicationContext(), ActivitiesMapActivity.class));
             } else {
-                DialogUtils.buildAlertDialog(getString(R.string.location_denied_aware_title),
+                DialogUtils.createAlertDialog(getString(R.string.location_denied_aware_title),
                         getString(R.string.location_denied_aware_message),
                         MainMenuActivity.this).show();
+            }
+        }
+
+        if (requestCode == NEW_ACTIVITY_MAP_REQUEST_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class));
+            } else {
+
+                DialogUtils.getDefaultAlertDialogBuilder(getString(R.string.location_denied_aware_title),
+                        getString(R.string.location_disallowed_warning_message), MainMenuActivity.this)
+                .setPositiveButton("Continue", (dialog, which) -> startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class))).create().show();
             }
         }
     }

@@ -86,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
             );
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), RegisterActivity.this).show();
         }
     }
 
@@ -100,14 +100,14 @@ public class RegisterActivity extends AppCompatActivity {
         try {
             throw task.getException();
         } catch(FirebaseAuthWeakPasswordException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.password_weak_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.password_weak_msg), RegisterActivity.this).show();
         } catch(FirebaseAuthInvalidCredentialsException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.invalid_email_format_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.invalid_email_format_msg), RegisterActivity.this).show();
         } catch(FirebaseAuthUserCollisionException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.email_collision_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.email_collision_msg), RegisterActivity.this).show();
         } catch(Exception e) {
             Log.e(FIREBASE_LOG, e.getMessage());
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), e.getMessage(), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), e.getMessage(), RegisterActivity.this).show();
         } finally {
             progressBar.setVisibility(View.GONE);
         }
