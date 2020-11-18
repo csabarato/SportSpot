@@ -8,8 +8,8 @@ public class ActivityDetailsViewModel extends ViewModel {
 
     private String description;
     private String sportType;
-    private float locationLat;
-    private float locationLon;
+    private Double locationLat;
+    private Double locationLon;
     private Calendar startDate;
     private Integer numOfPersons;
 
@@ -29,19 +29,19 @@ public class ActivityDetailsViewModel extends ViewModel {
         this.sportType = sportType;
     }
 
-    public float getLocationLat() {
+    public Double getLocationLat() {
         return locationLat;
     }
 
-    public void setLocationLat(float locationLat) {
+    public void setLocationLat(Double locationLat) {
         this.locationLat = locationLat;
     }
 
-    public float getLocationLon() {
+    public Double getLocationLon() {
         return locationLon;
     }
 
-    public void setLocationLon(float locationLon) {
+    public void setLocationLon(Double locationLon) {
         this.locationLon = locationLon;
     }
 

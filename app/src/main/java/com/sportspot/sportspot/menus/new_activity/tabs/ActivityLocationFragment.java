@@ -3,6 +3,7 @@ package com.sportspot.sportspot.menus.new_activity.tabs;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -41,6 +42,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private MapView map;
     private GeoPoint currentLocation = null;
     private FragmentTransaction ft;
+
+    private Marker activityLocationMarker = null;
 
     public ActivityLocationFragment() {
     }
@@ -88,7 +91,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         // Check if necessary permissions is granted.
         if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationProvider locationProvider = new LocationProvider(getActivity().getApplicationContext());
+            LocationProvider locationProvider = LocationProvider.getInstance(getActivity().getApplicationContext());
             if (locationProvider.getCurrentLocation() != null) {
                 currentLocation = new GeoPoint(locationProvider.getCurrentLocation());
                 map.getController().setCenter(currentLocation);
@@ -100,6 +103,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         }
 
         activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
+        restoreDataFromViewModel();
 
         return view;
     }
@@ -129,17 +133,42 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-    public boolean longPressHelper(GeoPoint p) {
-
-        Marker locationMarker = new Marker(map);
-        locationMarker.setPosition(p);
-        locationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        map.getOverlays().add(locationMarker);
-
-        return false;
+    public boolean longPressHelper(GeoPoint position) {
+        showActivityLocationMarker(position);
+        return true;
     }
 
+    private void showActivityLocationMarker(GeoPoint position) {
 
+        if (activityLocationMarker != null) {
+            map.getOverlays().remove(activityLocationMarker);
+        }
+
+        activityLocationMarker = new Marker(map);
+        activityLocationMarker.setPosition(position);
+        activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+
+        Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
+        activityLocationMarker.setIcon(newLocationIcon);
+
+        activityDetailsViewModel.setLocationLat(position.getLatitude());
+        activityDetailsViewModel.setLocationLon(position.getLongitude());
+        map.getOverlays().add(activityLocationMarker);
+    }
+
+    private void restoreDataFromViewModel() {
+        if (activityDetailsViewModel.getLocationLat() != null && activityDetailsViewModel.getLocationLon() != null) {
+
+            GeoPoint position = new GeoPoint(activityDetailsViewModel.getLocationLat(), activityDetailsViewModel.getLocationLon());
+            activityLocationMarker = new Marker(map);
+            activityLocationMarker.setPosition(position);
+            activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+
+            Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
+            activityLocationMarker.setIcon(newLocationIcon);
+            map.getOverlays().add(activityLocationMarker);
+        }
+    }
 
     @Override
     public void onClick(View v) {

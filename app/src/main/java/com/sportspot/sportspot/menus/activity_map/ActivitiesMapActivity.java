@@ -48,7 +48,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         IMapController mapController = map.getController();
         mapController.setZoom(13d);
 
-        LocationProvider locationProvider = new LocationProvider(getApplicationContext());
+        LocationProvider locationProvider = LocationProvider.getInstance(getApplicationContext());
 
         if (locationProvider.getCurrentLocation() != null) {
             GeoPoint currentLocation = new GeoPoint(locationProvider.getCurrentLocation());
