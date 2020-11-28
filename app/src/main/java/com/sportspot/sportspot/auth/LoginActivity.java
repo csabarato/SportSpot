@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private FirebaseAuth firebaseAuth;
+    private GoogleSignInService googleSignInService;
     private ConnectivityManager connectivityManager;
 
     // LOG tags
@@ -64,8 +65,10 @@ public class LoginActivity extends AppCompatActivity {
 
         disableLoginBtnWhenEmptyInputs();
 
-        GoogleSignInService googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
+        googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
         googleSingInButton.setOnClickListener(googleSignInService);
+
+        /*doGoogleSilentSignIn(googleSignInService);*/
 
         // setup ConnectivityManager
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -90,15 +93,12 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordEditText.getText().toString().trim();
 
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
-                            } else {
-                                Log.d(FIREBASE_LOG, "loginUserWithEmailAndPass:failure", task.getException());
-                                handleFirebaseLoginErrors(task);
-                            }
+                    signInTask -> {
+                        if (signInTask.isSuccessful()) {
+                            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                        } else {
+                            Log.d(FIREBASE_LOG, "loginUserWithEmailAndPass:failure", signInTask.getException());
+                            handleFirebaseLoginErrors(signInTask);
                         }
                     }
             );
@@ -134,6 +134,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void doGoogleSilentSignIn(GoogleSignInService googleSignInService) {
+        Task<GoogleSignInAccount> task = googleSignInService.getGoogleSignInClient(getApplicationContext()).silentSignIn();
+
+        if (task.isSuccessful()) {
+            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            task.addOnCompleteListener(signInTask -> {
+                progressBar.setVisibility(View.GONE);
+                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+            });
+        }
+    }
+
     private void handleGoolgeSignInResult(Task<GoogleSignInAccount> task) {
 
         try{
@@ -155,8 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
             finish();
         } else if (GoogleSignIn.getLastSignedInAccount(this) != null) {
-            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
-            finish();
+            doGoogleSilentSignIn(this.googleSignInService);
         }
     }
 
