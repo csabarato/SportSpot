@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.service;
+package com.sportspot.sportspot.shared;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

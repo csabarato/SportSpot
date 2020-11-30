@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/new_activity_details_fragment"
-        android:name="com.sportspot.sportspot.menus.new_activity.tabs.ActivityDetailsFragment"
+        android:name="com.sportspot.sportspot.menus.new_activity.new_activity_fragments.ActivityDetailsFragment"
         android:label="New Activity details"
         tools:layout="@layout/activity_details_fragment">
 
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/new_activity_location_fragment"
-        android:name="com.sportspot.sportspot.menus.new_activity.tabs.ActivityLocationFragment"
+        android:name="com.sportspot.sportspot.menus.new_activity.new_activity_fragments.ActivityLocationFragment"
         android:label="New Activity location"
         tools:layout="@layout/activity_location_fragment">
 

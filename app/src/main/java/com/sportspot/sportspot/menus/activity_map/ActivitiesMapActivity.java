@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.service.LocationProvider;
+import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
 
 import org.osmdroid.api.IMapController;

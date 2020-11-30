@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.menus.new_activity.tabs;
+package com.sportspot.sportspot.menus.new_activity.new_activity_fragments;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,8 +19,10 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.service.LocationProvider;
+import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
+import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
+import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import org.osmdroid.api.IMapController;
@@ -42,23 +43,20 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private MapView map;
     private GeoPoint currentLocation = null;
     private FragmentTransaction ft;
+    private AsyncTaskRunner asyncTaskRunner;
 
     private Marker activityLocationMarker = null;
 
     public ActivityLocationFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.activity_location_fragment, container, false);
-
+        this.asyncTaskRunner = new AsyncTaskRunner();
 
         // Load and initialize the osmdroid configuration
         Context ctx = getActivity().getApplicationContext();
@@ -178,6 +176,10 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         }
 
         else if (v.getId() == R.id.submit_new_activity) {
+
+            asyncTaskRunner.executeAsync(new PostNewActivityTask(), (data) -> {
+                String hello = data;
+            });
 
         } else if (v.getId() == R.id.my_location_button) {
             if (currentLocation != null) {
