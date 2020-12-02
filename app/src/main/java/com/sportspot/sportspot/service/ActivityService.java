@@ -3,10 +3,11 @@ package com.sportspot.sportspot.service;
 import android.net.Uri;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -24,48 +25,31 @@ public class ActivityService {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    public static String addNewActivity(String token) {
+    public static ResponseModel<String> addNewActivity(ActivityDetailsViewModel activityDetails, String googleIdToken) {
 
-        Uri builtUri = Uri.parse(base_url).buildUpon()
-                .appendQueryParameter("id_token", token)
+        ResponseModel<String> helloResponse = new ResponseModel<>();
+
+        Uri builtUri = Uri.parse(local_url).buildUpon()
+                .appendPath("activity")
                 .build();
+
+        String json = activityDetails.toJson();
+        RequestBody requestBody = RequestBody.create(JSON, json);
 
         Request request = new Request.Builder()
                 .url(builtUri.toString())
-                .get()
+                .addHeader("Authorization", "Bearer "+ googleIdToken)
+                .post(requestBody)
                 .build();
 
-        Response response = null;
         try {
-            response = client.newCall(request).execute();
-            return response.body().string();
+            Response response = client.newCall(request).execute();
+            helloResponse.setData(response.body().string());
+            return helloResponse;
         } catch (IOException e) {
             e.printStackTrace();
+            helloResponse.setErrors(Collections.singletonList(e.getMessage()));
+            return helloResponse;
         }
-    return null;
-    }
-
-    public static String getHello() throws JSONException {
-
-        Uri builtUri = Uri.parse(local_url);
-
-        JSONObject json = new JSONObject();
-        json.put("msg", "posted");
-
-        RequestBody body = RequestBody.create(JSON, json.toString());
-
-        Request request = new Request.Builder()
-                .url(builtUri.toString())
-                .post(body)
-                .build();
-
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
-            return response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

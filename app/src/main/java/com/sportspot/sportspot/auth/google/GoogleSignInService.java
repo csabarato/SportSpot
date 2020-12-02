@@ -49,4 +49,8 @@ public class GoogleSignInService implements View.OnClickListener {
         Intent googleSignInIntent = googleSignInClient.getSignInIntent();
         activity.startActivityForResult(googleSignInIntent, GOOGLE__SIGN_IN_RC);
     }
+
+    public static String getLastUserToken(Context context) {
+        return GoogleSignIn.getLastSignedInAccount(context).getIdToken();
+    }
 }

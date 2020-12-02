@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
@@ -94,9 +95,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
                 currentLocation = new GeoPoint(locationProvider.getCurrentLocation());
                 map.getController().setCenter(currentLocation);
             } else {
-                ft = getActivity().getSupportFragmentManager().beginTransaction();
-                new AlertDialogFragment(getString(R.string.location_denied_aware_title), getString(R.string.location_denied_aware_message))
-                        .show(ft, "alert_dialog");
+                showAlertDialog(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message));
             }
         }
 
@@ -177,18 +176,27 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         else if (v.getId() == R.id.submit_new_activity) {
 
-            asyncTaskRunner.executeAsync(new PostNewActivityTask(), (data) -> {
-                String hello = data;
+            asyncTaskRunner.executeAsync(new PostNewActivityTask(
+                    activityDetailsViewModel,
+                    GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
+                if (!data.getErrors().isEmpty()) {
+                    showAlertDialog("Http Request Error", data.getErrors().get(0));
+                } else {
+                    showAlertDialog("Req succesful", data.getData());
+                }
             });
 
         } else if (v.getId() == R.id.my_location_button) {
             if (currentLocation != null) {
                 map.getController().animateTo(currentLocation);
             } else {
-                ft = getActivity().getSupportFragmentManager().beginTransaction();
-                new AlertDialogFragment(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message))
-                        .show(ft, "alert_dialog");
+                showAlertDialog(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message));
             }
         }
+    }
+
+    private void showAlertDialog(String title, String message) {
+        ft = getActivity().getSupportFragmentManager().beginTransaction();
+        new AlertDialogFragment(title, message).show(ft, "alert_dialog");
     }
 }
