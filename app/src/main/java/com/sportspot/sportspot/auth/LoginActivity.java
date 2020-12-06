@@ -1,6 +1,5 @@
 package com.sportspot.sportspot.auth;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +28,7 @@ import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.KeyboardUtils;
+import com.sportspot.sportspot.utils.TextValidator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -63,7 +61,8 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
         passwordEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
 
-        disableLoginBtnWhenEmptyInputs();
+        emailEditText.addTextChangedListener(loginInputValidator(emailEditText));
+        passwordEditText.addTextChangedListener(loginInputValidator(passwordEditText));
 
         googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
         googleSingInButton.setOnClickListener(googleSignInService);
@@ -173,46 +172,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void disableLoginBtnWhenEmptyInputs() {
+    private TextWatcher loginInputValidator(EditText editText) {
 
-        emailEditText.addTextChangedListener(new TextWatcher() {
+        return new TextValidator(editText) {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+            public void validate(String text) {
+                validateLoginInputs();
             }
+        };
+    }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().trim().length() == 0) {
-                    loginButton.setEnabled(false);
-                } else if (passwordEditText.getText().toString().length() > 0) {
-                    loginButton.setEnabled(true);
-                }
-            }
-        });
+    private void validateLoginInputs() {
 
-        passwordEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() == 0) {
-                    loginButton.setEnabled(false);
-                } else if (emailEditText.getText().toString().length() > 0) {
-                    loginButton.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        if (emailEditText.getText() == null || emailEditText.getText().toString().isEmpty()
+                || passwordEditText == null || passwordEditText.getText().toString().isEmpty()) {
+            loginButton.setEnabled(false);
+        } else {
+            loginButton.setEnabled(true);
+        }
     }
 }
