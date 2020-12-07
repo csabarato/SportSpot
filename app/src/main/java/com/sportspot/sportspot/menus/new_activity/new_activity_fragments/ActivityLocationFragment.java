@@ -45,6 +45,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private GeoPoint currentLocation = null;
     private FragmentTransaction ft;
     private AsyncTaskRunner asyncTaskRunner;
+    private View view;
 
     private Marker activityLocationMarker = null;
 
@@ -56,28 +57,10 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.activity_location_fragment, container, false);
+        view =  inflater.inflate(R.layout.activity_location_fragment, container, false);
         this.asyncTaskRunner = new AsyncTaskRunner();
 
-        // Load and initialize the osmdroid configuration
-        Context ctx = getActivity().getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-
-        // Begin fragment Transaction - necessary for DialogFragments
-
-        map = view.findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
-        map.setMultiTouchControls(true);
-
-        addLocationOverlay();
-
-        IMapController mapController = map.getController();
-        mapController.setZoom(13d);
-
-        MapEventsOverlay eventsOverlay = new MapEventsOverlay(this);
-        map.getOverlays().add(eventsOverlay);
-
+        configureMapView();
 
         Button backToDetailsButton = view.findViewById(R.id.back_to_details_button);
         backToDetailsButton.setOnClickListener(this);
@@ -103,6 +86,29 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         restoreDataFromViewModel();
 
         return view;
+    }
+
+    private void configureMapView() {
+
+        // Load and initialize the osmdroid configuration
+        Context ctx = getActivity().getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
+        // Begin fragment Transaction - necessary for DialogFragments
+
+        map = view.findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
+        map.setMultiTouchControls(true);
+
+        addLocationOverlay();
+
+        IMapController mapController = map.getController();
+        mapController.setZoom(13d);
+
+        MapEventsOverlay eventsOverlay = new MapEventsOverlay(this);
+        map.getOverlays().add(eventsOverlay);
+
     }
 
     private void addLocationOverlay() {
@@ -131,11 +137,11 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
     @Override
     public boolean longPressHelper(GeoPoint position) {
-        showActivityLocationMarker(position);
+        setActivityLocationMarker(position);
         return true;
     }
 
-    private void showActivityLocationMarker(GeoPoint position) {
+    private void setActivityLocationMarker(GeoPoint position) {
 
         if (activityLocationMarker != null) {
             map.getOverlays().remove(activityLocationMarker);
@@ -175,16 +181,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         }
 
         else if (v.getId() == R.id.submit_new_activity) {
-
-            asyncTaskRunner.executeAsync(new PostNewActivityTask(
-                    activityDetailsViewModel,
-                    GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
-                if (!data.getErrors().isEmpty()) {
-                    showAlertDialog("Http Request Error", data.getErrors().get(0));
-                } else {
-                    showAlertDialog("Req succesful", data.getData());
-                }
-            });
+            submitNewActivity();
 
         } else if (v.getId() == R.id.my_location_button) {
             if (currentLocation != null) {
@@ -193,6 +190,19 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
                 showAlertDialog(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message));
             }
         }
+    }
+
+    private void submitNewActivity() {
+
+        asyncTaskRunner.executeAsync(new PostNewActivityTask(
+                activityDetailsViewModel,
+                GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
+            if (!data.getErrors().isEmpty()) {
+                showAlertDialog("Http Request Error", data.getErrors().get(0));
+            } else {
+                showAlertDialog("Req succesful", data.getData());
+            }
+        });
     }
 
     private void showAlertDialog(String title, String message) {

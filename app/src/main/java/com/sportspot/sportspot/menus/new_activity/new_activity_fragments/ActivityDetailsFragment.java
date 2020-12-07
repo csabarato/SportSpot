@@ -111,7 +111,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         }
 
         if(adViewModel.getNumOfPersons() != null) {
-            numOfPersonsEditText.setText(adViewModel.getNumOfPersons().toString());
+            numOfPersonsEditText.setText(Integer.toString(adViewModel.getNumOfPersons()));
         }
 
         if (adViewModel.getDescription() !=  null) {

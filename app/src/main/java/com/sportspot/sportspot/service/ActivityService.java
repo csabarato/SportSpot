@@ -36,17 +36,19 @@ public class ActivityService {
         String json = activityDetails.toJson();
         RequestBody requestBody = RequestBody.create(JSON, json);
 
-        Request request = new Request.Builder()
+        try {
+
+            Request request = new Request.Builder()
                 .url(builtUri.toString())
                 .addHeader("Authorization", "Bearer "+ googleIdToken)
                 .post(requestBody)
                 .build();
 
-        try {
+
             Response response = client.newCall(request).execute();
             helloResponse.setData(response.body().string());
             return helloResponse;
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
             helloResponse.setErrors(Collections.singletonList(e.getMessage()));
             return helloResponse;
