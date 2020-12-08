@@ -7,6 +7,8 @@ import com.sportspot.sportspot.response_model.ResponseModel;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.Collections;
 
 import okhttp3.MediaType;
@@ -46,7 +48,14 @@ public class ActivityService {
 
 
             Response response = client.newCall(request).execute();
-            helloResponse.setData(response.body().string());
+
+            if (response.code() == HttpURLConnection.HTTP_CREATED) {
+                helloResponse.setData(response.body().string());
+            } else {
+                helloResponse.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
+            }
+
+
             return helloResponse;
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();

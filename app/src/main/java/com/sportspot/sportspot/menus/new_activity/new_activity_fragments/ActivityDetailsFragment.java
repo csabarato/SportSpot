@@ -3,7 +3,6 @@ package com.sportspot.sportspot.menus.new_activity.new_activity_fragments;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
@@ -143,7 +141,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         validateSportTypeDropdown();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
 
@@ -165,7 +162,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void showDatePickerDialog() {
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Material_Dialog,

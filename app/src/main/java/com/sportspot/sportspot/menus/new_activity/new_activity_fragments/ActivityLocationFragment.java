@@ -1,10 +1,13 @@
 package com.sportspot.sportspot.menus.new_activity.new_activity_fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
@@ -46,6 +50,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private FragmentTransaction ft;
     private AsyncTaskRunner asyncTaskRunner;
     private View view;
+    private ProgressDialog progressDialog;
+    private Button submitDetailsButton;
 
     private Marker activityLocationMarker = null;
 
@@ -65,8 +71,11 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         Button backToDetailsButton = view.findViewById(R.id.back_to_details_button);
         backToDetailsButton.setOnClickListener(this);
 
-        Button submitDetailsButton = view.findViewById(R.id.submit_new_activity);
+        submitDetailsButton = view.findViewById(R.id.submit_new_activity);
         submitDetailsButton.setOnClickListener(this);
+
+        submitDetailsButton.setClickable(false);
+        submitDetailsButton.setAlpha(.5f);
 
         ImageButton myLocationButton = view.findViewById(R.id.my_location_button);
         myLocationButton.setOnClickListener(this);
@@ -85,6 +94,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
         restoreDataFromViewModel();
 
+        progressDialog = new ProgressDialog(getActivity());
         return view;
     }
 
@@ -150,6 +160,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         activityLocationMarker = new Marker(map);
         activityLocationMarker.setPosition(position);
         activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+        activityLocationMarker.setInfoWindow(null);
 
         Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
         activityLocationMarker.setIcon(newLocationIcon);
@@ -157,6 +168,9 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         activityDetailsViewModel.setLocationLat(position.getLatitude());
         activityDetailsViewModel.setLocationLon(position.getLongitude());
         map.getOverlays().add(activityLocationMarker);
+
+        submitDetailsButton.setClickable(true);
+        submitDetailsButton.setAlpha(1);
     }
 
     private void restoreDataFromViewModel() {
@@ -170,6 +184,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
             activityLocationMarker.setIcon(newLocationIcon);
             map.getOverlays().add(activityLocationMarker);
+            submitDetailsButton.setClickable(true);
+            submitDetailsButton.setAlpha(1);
         }
     }
 
@@ -194,19 +210,48 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
     private void submitNewActivity() {
 
+        showProgressDialog();
         asyncTaskRunner.executeAsync(new PostNewActivityTask(
                 activityDetailsViewModel,
                 GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
-            if (!data.getErrors().isEmpty()) {
-                showAlertDialog("Http Request Error", data.getErrors().get(0));
-            } else {
-                showAlertDialog("Req succesful", data.getData());
-            }
+
+                    hideProgressDialog();
+                    if (!data.getErrors().isEmpty()) {
+                        showAlertDialog("Http Request Error", String.join("; ", data.getErrors()));
+                    } else {
+                        showAlertDialog("Activity saved successfully!", "");
+                        waitAndNavigateToMainMenu();
+                    }
         });
+    }
+
+    private void waitAndNavigateToMainMenu() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(getActivity(), MainMenuActivity.class));
+                if (getActivity() != null) {
+                    getActivity().finish();
+                }
+            }
+        }, 1500);
     }
 
     private void showAlertDialog(String title, String message) {
         ft = getActivity().getSupportFragmentManager().beginTransaction();
         new AlertDialogFragment(title, message).show(ft, "alert_dialog");
+    }
+
+    private void showProgressDialog() {
+
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Saving your activity...");
+        progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.dismiss();
     }
 }
