@@ -161,6 +161,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         activityLocationMarker.setPosition(position);
         activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         activityLocationMarker.setInfoWindow(null);
+        activityLocationMarker.setDraggable(true);
 
         Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
         activityLocationMarker.setIcon(newLocationIcon);
@@ -171,6 +172,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         submitDetailsButton.setClickable(true);
         submitDetailsButton.setAlpha(1);
+
+        map.getController().animateTo(activityLocationMarker.getPosition());
     }
 
     private void restoreDataFromViewModel() {
