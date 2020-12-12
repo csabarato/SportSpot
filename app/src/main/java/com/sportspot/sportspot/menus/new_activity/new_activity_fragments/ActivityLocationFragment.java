@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +22,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
@@ -28,6 +31,7 @@ import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
+import com.sportspot.sportspot.utils.ShowcaseViewUtils;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import org.osmdroid.api.IMapController;
@@ -52,8 +56,13 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private View view;
     private ProgressDialog progressDialog;
     private Button submitDetailsButton;
+    private ImageButton myLocationButton;
 
     private Marker activityLocationMarker = null;
+
+    private ShowcaseView activityLocationShowcaseView;
+    private ShowcaseView activityLocationDragShowcaseView;
+    private ShowcaseView myLocationShowcaseView;
 
     public ActivityLocationFragment() {
     }
@@ -77,7 +86,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         submitDetailsButton.setClickable(false);
         submitDetailsButton.setAlpha(.5f);
 
-        ImageButton myLocationButton = view.findViewById(R.id.my_location_button);
+        myLocationButton = view.findViewById(R.id.my_location_button);
         myLocationButton.setOnClickListener(this);
 
         // Check if necessary permissions is granted.
@@ -95,6 +104,11 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         restoreDataFromViewModel();
 
         progressDialog = new ProgressDialog(getActivity());
+
+        if (currentLocation != null) {
+            displayActivityLocationShowcaseView();
+        }
+
         return view;
     }
 
@@ -114,7 +128,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         addLocationOverlay();
 
         IMapController mapController = map.getController();
-        mapController.setZoom(13d);
+        mapController.setZoom(17d);
 
         MapEventsOverlay eventsOverlay = new MapEventsOverlay(this);
         map.getOverlays().add(eventsOverlay);
@@ -162,6 +176,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
         activityLocationMarker.setInfoWindow(null);
         activityLocationMarker.setDraggable(true);
+        activityLocationMarker.setOnMarkerDragListener(onMarkerDragListener());
 
         Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
         activityLocationMarker.setIcon(newLocationIcon);
@@ -173,20 +188,40 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         submitDetailsButton.setClickable(true);
         submitDetailsButton.setAlpha(1);
 
+        if (activityLocationShowcaseView != null && activityLocationShowcaseView.isShowing()) {
+            activityLocationShowcaseView.hide();
+        }
+
         map.getController().animateTo(activityLocationMarker.getPosition());
+    }
+
+    private Marker.OnMarkerDragListener onMarkerDragListener() {
+        return new Marker.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDrag(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                if(activityLocationDragShowcaseView != null && activityLocationDragShowcaseView.isShowing()) {
+                    activityLocationDragShowcaseView.hide();
+                }
+            }
+
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+
+            }
+        };
     }
 
     private void restoreDataFromViewModel() {
         if (activityDetailsViewModel.getLocationLat() != null && activityDetailsViewModel.getLocationLon() != null) {
 
             GeoPoint position = new GeoPoint(activityDetailsViewModel.getLocationLat(), activityDetailsViewModel.getLocationLon());
-            activityLocationMarker = new Marker(map);
-            activityLocationMarker.setPosition(position);
-            activityLocationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+            setActivityLocationMarker(position);
 
-            Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
-            activityLocationMarker.setIcon(newLocationIcon);
-            map.getOverlays().add(activityLocationMarker);
             submitDetailsButton.setClickable(true);
             submitDetailsButton.setAlpha(1);
         }
@@ -203,11 +238,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             submitNewActivity();
 
         } else if (v.getId() == R.id.my_location_button) {
-            if (currentLocation != null) {
-                map.getController().animateTo(currentLocation);
-            } else {
-                showAlertDialog(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message));
-            }
+            centerMapOnMyLocation();
         }
     }
 
@@ -226,6 +257,19 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
                         waitAndNavigateToMainMenu();
                     }
         });
+    }
+
+    private void centerMapOnMyLocation() {
+
+        if(myLocationShowcaseView != null && myLocationShowcaseView.isShowing()) {
+            myLocationShowcaseView.hide();
+        }
+
+        if (currentLocation != null) {
+            map.getController().animateTo(currentLocation);
+        } else {
+            showAlertDialog(getString(R.string.location_unavailable_title), getString(R.string.location_unavailable_message));
+        }
     }
 
     private void waitAndNavigateToMainMenu() {
@@ -256,5 +300,66 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private void hideProgressDialog() {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.dismiss();
+    }
+
+    private OnShowcaseEventListener onShowcaseEventListener() {
+
+        return new OnShowcaseEventListener() {
+            @Override
+            public void onShowcaseViewHide(ShowcaseView showcaseView) {
+
+                if(showcaseView.equals(activityLocationShowcaseView)) {
+                    displayActivityLocationDragShowcaseView();
+                } else if (showcaseView.equals(activityLocationDragShowcaseView)) {
+                    displayMyLocationShowcaseView();
+                }
+            }
+
+            @Override
+            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+            }
+
+            @Override
+            public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+            }
+
+            @Override
+            public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
+
+            }
+        };
+    }
+
+    private void displayActivityLocationShowcaseView() {
+
+        GeoPoint locationTipGeoPoint = new GeoPoint(currentLocation);
+        locationTipGeoPoint.setLatitude(currentLocation.getLatitude() + 0.002);
+        locationTipGeoPoint.setLongitude(currentLocation.getLongitude() + 0.002);
+
+        map.getController().setCenter(locationTipGeoPoint);
+
+        activityLocationShowcaseView = ShowcaseViewUtils.getDefaultShowcaseBuilder(
+                getActivity(),view,getString(R.string.activity_location_showcase_title),getString(R.string.activity_location_showcase_text))
+                .setShowcaseEventListener(onShowcaseEventListener())
+                .build();
+    }
+
+    private void displayActivityLocationDragShowcaseView() {
+
+        activityLocationDragShowcaseView = ShowcaseViewUtils.getDefaultShowcaseBuilder(
+                getActivity(),view,getString(R.string.activity_location_drag_showcase_title),getString(R.string.activity_location_drag_showcase_text))
+                .setShowcaseEventListener(onShowcaseEventListener())
+                .build();
+
+    }
+
+    private void displayMyLocationShowcaseView() {
+
+        myLocationShowcaseView = ShowcaseViewUtils
+                .getDefaultShowcaseBuilder(getActivity(), myLocationButton, getString(R.string.my_location_showcase_text), null)
+                .setShowcaseEventListener(onShowcaseEventListener())
+                .build();
     }
 }

@@ -81,5 +81,13 @@
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>
 
+    <!--Showcase view messages -->
+    <string name="activity_location_showcase_title">Select loaction to your activity</string>
+    <string name="activity_location_showcase_text">Press and hold to select location.</string>
+    <string name="activity_location_drag_showcase_title">Change location of your activity</string>
+    <string name="activity_location_drag_showcase_text">You can drag and drop the location marker to change location.</string>
+    <string name="my_location_showcase_text">Tap My Location button, to center map to your current location.</string>
+
+
 
 </resources>
