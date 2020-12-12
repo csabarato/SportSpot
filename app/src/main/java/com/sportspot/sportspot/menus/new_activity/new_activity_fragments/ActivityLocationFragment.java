@@ -207,6 +207,11 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
                 if(activityLocationDragShowcaseView != null && activityLocationDragShowcaseView.isShowing()) {
                     activityLocationDragShowcaseView.hide();
                 }
+
+                activityDetailsViewModel.setLocationLat(marker.getPosition().getLatitude());
+                activityDetailsViewModel.setLocationLon(marker.getPosition().getLongitude());
+                map.getController().animateTo(activityLocationMarker.getPosition());
+
             }
 
             @Override
