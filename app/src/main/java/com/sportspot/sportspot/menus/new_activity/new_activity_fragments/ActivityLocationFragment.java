@@ -4,13 +4,13 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,16 +22,15 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
-import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.constants.SharedPrefConst;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
-import com.sportspot.sportspot.utils.ShowcaseViewUtils;
+import com.sportspot.sportspot.shared.ShowcaseSequence;
 import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import org.osmdroid.api.IMapController;
@@ -57,12 +56,11 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     private ProgressDialog progressDialog;
     private Button submitDetailsButton;
     private ImageButton myLocationButton;
+    private SharedPreferences sharedPreferences;
 
     private Marker activityLocationMarker = null;
 
-    private ShowcaseView activityLocationShowcaseView;
-    private ShowcaseView activityLocationDragShowcaseView;
-    private ShowcaseView myLocationShowcaseView;
+    private ShowcaseSequence showcaseSequence;
 
     public ActivityLocationFragment() {
     }
@@ -74,6 +72,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.activity_location_fragment, container, false);
         this.asyncTaskRunner = new AsyncTaskRunner();
+        sharedPreferences = getActivity().getSharedPreferences(SharedPrefConst.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         configureMapView();
 
@@ -105,10 +104,6 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         progressDialog = new ProgressDialog(getActivity());
 
-        if (currentLocation != null) {
-            displayActivityLocationShowcaseView();
-        }
-
         return view;
     }
 
@@ -139,7 +134,16 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getActivity().getApplicationContext()), map);
         mLocationOverlay.enableMyLocation();
         map.getOverlays().add(mLocationOverlay);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        boolean isShowcaseCompleted = sharedPreferences.getBoolean(SharedPrefConst.IS_SHOWCASE_COMPLETED,false);
+        if (!isShowcaseCompleted && currentLocation != null && showcaseSequence == null) {
+            createShowcaseSequence().start();
+        }
     }
 
     @Override
@@ -152,6 +156,15 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     public void onPause() {
         super.onPause();
         map.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (showcaseSequence != null && showcaseSequence.isShowing()) {
+            showcaseSequence.abort();
+        }
     }
 
     @Override
@@ -188,10 +201,6 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         submitDetailsButton.setClickable(true);
         submitDetailsButton.setAlpha(1);
 
-        if (activityLocationShowcaseView != null && activityLocationShowcaseView.isShowing()) {
-            activityLocationShowcaseView.hide();
-        }
-
         map.getController().animateTo(activityLocationMarker.getPosition());
     }
 
@@ -204,9 +213,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                if(activityLocationDragShowcaseView != null && activityLocationDragShowcaseView.isShowing()) {
-                    activityLocationDragShowcaseView.hide();
-                }
+
 
                 activityDetailsViewModel.setLocationLat(marker.getPosition().getLatitude());
                 activityDetailsViewModel.setLocationLon(marker.getPosition().getLongitude());
@@ -266,10 +273,6 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
     private void centerMapOnMyLocation() {
 
-        if(myLocationShowcaseView != null && myLocationShowcaseView.isShowing()) {
-            myLocationShowcaseView.hide();
-        }
-
         if (currentLocation != null) {
             map.getController().animateTo(currentLocation);
         } else {
@@ -307,64 +310,25 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         progressDialog.dismiss();
     }
 
-    private OnShowcaseEventListener onShowcaseEventListener() {
+    private ShowcaseSequence createShowcaseSequence() {
 
-        return new OnShowcaseEventListener() {
-            @Override
-            public void onShowcaseViewHide(ShowcaseView showcaseView) {
+        showcaseSequence = new ShowcaseSequence(getActivity());
 
-                if(showcaseView.equals(activityLocationShowcaseView)) {
-                    displayActivityLocationDragShowcaseView();
-                } else if (showcaseView.equals(activityLocationDragShowcaseView)) {
-                    displayMyLocationShowcaseView();
-                }
-            }
+        // Center View to Target GeoPoint, different than currentLocation
+        GeoPoint targetGeoPoint = new GeoPoint(currentLocation);
+        targetGeoPoint.setLatitude(currentLocation.getLatitude() + 0.002);
+        targetGeoPoint.setLongitude(currentLocation.getLongitude() + 0.002);
+        map.getController().setCenter(targetGeoPoint);
 
-            @Override
-            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+        showcaseSequence.createScBuilderAndAddToSequence(
+                view, getString(R.string.activity_location_showcase_title),getString(R.string.activity_location_showcase_text));
 
-            }
+        showcaseSequence.createScBuilderAndAddToSequence(
+                view, getString(R.string.activity_location_drag_showcase_title), getString(R.string.activity_location_drag_showcase_text));
 
-            @Override
-            public void onShowcaseViewShow(ShowcaseView showcaseView) {
+        showcaseSequence.createScBuilderAndAddToSequence(
+                myLocationButton, getString(R.string.my_location_showcase_text), null);
 
-            }
-
-            @Override
-            public void onShowcaseViewTouchBlocked(MotionEvent motionEvent) {
-
-            }
-        };
-    }
-
-    private void displayActivityLocationShowcaseView() {
-
-        GeoPoint locationTipGeoPoint = new GeoPoint(currentLocation);
-        locationTipGeoPoint.setLatitude(currentLocation.getLatitude() + 0.002);
-        locationTipGeoPoint.setLongitude(currentLocation.getLongitude() + 0.002);
-
-        map.getController().setCenter(locationTipGeoPoint);
-
-        activityLocationShowcaseView = ShowcaseViewUtils.getDefaultShowcaseBuilder(
-                getActivity(),view,getString(R.string.activity_location_showcase_title),getString(R.string.activity_location_showcase_text))
-                .setShowcaseEventListener(onShowcaseEventListener())
-                .build();
-    }
-
-    private void displayActivityLocationDragShowcaseView() {
-
-        activityLocationDragShowcaseView = ShowcaseViewUtils.getDefaultShowcaseBuilder(
-                getActivity(),view,getString(R.string.activity_location_drag_showcase_title),getString(R.string.activity_location_drag_showcase_text))
-                .setShowcaseEventListener(onShowcaseEventListener())
-                .build();
-
-    }
-
-    private void displayMyLocationShowcaseView() {
-
-        myLocationShowcaseView = ShowcaseViewUtils
-                .getDefaultShowcaseBuilder(getActivity(), myLocationButton, getString(R.string.my_location_showcase_text), null)
-                .setShowcaseEventListener(onShowcaseEventListener())
-                .build();
+        return showcaseSequence;
     }
 }
