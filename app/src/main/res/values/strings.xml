@@ -30,8 +30,38 @@
     <!-- Main menu items strings -->
     <string name="menu_profile">My profile</string>
     <string name="menu_activities_map">Map of activities</string>
-    <string name="menu_new_activity">New activity</string>
+    <string name="menu_new_activity">Add new activity</string>
     <string name="menu_pitches">Pithces</string>
+
+    <!--New activity - Details page -->
+    <string name="new_activity_detail_header"> Add the details of your activity </string>
+    <string name="new_activity_detail_description"> Description </string>
+    <string name="new_activity_next_btn"> Next </string>
+    <string name="new_activity_desc_required"> Activity description is required</string>
+    <string name="new_activity_sport_required"> Sport type is required</string>
+    <string name="new_activity_start_date_hint">Select a date</string>
+    <string name="new_activity_start_date_required">Start date is required</string>
+
+    <string name="new_activity_start_time_hint">Select start time</string>
+    <string name="new_activity_start_time_required">Start time is required</string>
+
+    <string name="new_activity_num_of_persons_hint">Num of persons</string>
+    <string name="new_activity_num_of_persons_required">Num of persons</string>
+
+    <!--Sport type select-->
+    <string name="sport_select_hint">Select a sport</string>
+    <string-array name="sport_type_items_array">
+        <item>Basketball</item>
+        <item>Football</item>
+        <item>Table tennis</item>
+        <item>Tennis</item>
+        <item>Teqball</item>
+    </string-array>
+
+
+    <!--New activity - Location page -->
+    <string name="new_activity_loaction_back_btn"> Back </string>
+    <string name="new_activity_loaction_submit_btn"> Submit </string>
 
     <!-- Navigation drawer open - close Description -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -46,9 +76,18 @@
     <!--Dialog messages-->
     <string name="location_denied_aware_title">Location permission is not allowed for this application.</string>
     <string name="location_denied_aware_message">If you would like to access this feature, please enable Location permission in Settings.</string>
+    <string name="location_disallowed_warning_message">If you would like to use fully this feature, please enable Location permission in Settings. </string>
 
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>
+
+    <!--Showcase view messages -->
+    <string name="activity_location_showcase_title">Select loaction to your activity</string>
+    <string name="activity_location_showcase_text">Press and hold to select location.</string>
+    <string name="activity_location_drag_showcase_title">Change location of your activity</string>
+    <string name="activity_location_drag_showcase_text">You can drag and drop the location marker to change location.</string>
+    <string name="my_location_showcase_text">Tap My Location button, to center map to your current location.</string>
+
 
 
 </resources>

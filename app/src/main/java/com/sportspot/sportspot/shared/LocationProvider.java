@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.service;
+package com.sportspot.sportspot.shared;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,9 +10,17 @@ import android.os.Bundle;
 public class LocationProvider implements LocationListener {
 
     private Location currentLocation;
+    private static LocationProvider locationProvider = null;
+
+    public static LocationProvider getInstance(Context context) {
+        if (locationProvider == null) {
+            return new LocationProvider(context);
+        }
+        return locationProvider;
+    }
 
     @SuppressLint("MissingPermission")
-    public LocationProvider(Context context) {
+    private LocationProvider(Context context) {
 
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);

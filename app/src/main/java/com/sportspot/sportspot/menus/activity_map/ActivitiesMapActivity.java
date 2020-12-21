@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.service.LocationProvider;
+import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
 
 import org.osmdroid.api.IMapController;
@@ -42,19 +42,19 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         map.setMultiTouchControls(true);
 
-        IMapController mapController = map.getController();
-        mapController.setZoom(13d);
-
         addLocationOverlay();
         addCompassOverlay();
 
-        LocationProvider locationProvider = new LocationProvider(getApplicationContext());
+        IMapController mapController = map.getController();
+        mapController.setZoom(13d);
+
+        LocationProvider locationProvider = LocationProvider.getInstance(getApplicationContext());
 
         if (locationProvider.getCurrentLocation() != null) {
             GeoPoint currentLocation = new GeoPoint(locationProvider.getCurrentLocation());
             map.getController().setCenter(currentLocation);
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
     }
 

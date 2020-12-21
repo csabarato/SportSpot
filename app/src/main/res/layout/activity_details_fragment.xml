@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".menus.new_activity.new_activity_fragments.ActivityDetailsFragment"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/new_activity_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="28dp"
+        android:text="@string/new_activity_detail_header"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20sp">
+
+    </TextView>
+
+    <ScrollView
+        android:id="@+id/activity_details_scroll_view"
+        android:layout_below="@id/new_activity_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/sport_type_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_sport_type_24"
+                android:layout_margin="30dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/sport_type_dropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    android:hint="@string/sport_select_hint"
+                    android:inputType="none"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="30dp"
+                    android:weightSum="1.5">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/start_date_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/new_activity_start_date_hint"
+                        >
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/start_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:layout_weight="1"
+                            android:drawablePadding="15dp"
+                            android:inputType="none"
+                            android:focusable="false"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageView
+                        android:id="@+id/start_date_picker_icon"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/ic_calendar"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="30dp"
+                android:weightSum="1.5">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/start_time_input_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_activity_start_time_hint"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/start_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:drawablePadding="15dp"
+                        android:inputType="none"
+                        android:focusable="false"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/start_time_picker_icon"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_time_icon"
+                    />
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/activity_persons_num_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_num_of_persons"
+                android:layout_margin="30dp"
+                android:hint="@string/new_activity_num_of_persons_hint"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/activity_persons_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:gravity="start|top"
+                    android:ems="10"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/activity_desc_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_activity_desc_24"
+                android:layout_margin="30dp"
+                android:hint="@string/new_activity_detail_description">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/activity_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:gravity="start|top"
+                    android:ems="10"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/next_to_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/new_activity_next_btn"
+                android:layout_margin="30dp"
+
+                />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

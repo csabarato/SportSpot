@@ -1,6 +1,5 @@
 package com.sportspot.sportspot.auth;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +28,7 @@ import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.KeyboardUtils;
+import com.sportspot.sportspot.utils.TextValidator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -40,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private FirebaseAuth firebaseAuth;
+    private GoogleSignInService googleSignInService;
     private ConnectivityManager connectivityManager;
 
     // LOG tags
@@ -62,10 +61,13 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
         passwordEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
 
-        disableLoginBtnWhenEmptyInputs();
+        emailEditText.addTextChangedListener(loginInputValidator(emailEditText));
+        passwordEditText.addTextChangedListener(loginInputValidator(passwordEditText));
 
-        GoogleSignInService googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
+        googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
         googleSingInButton.setOnClickListener(googleSignInService);
+
+        /*doGoogleSilentSignIn(googleSignInService);*/
 
         // setup ConnectivityManager
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -90,20 +92,17 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordEditText.getText().toString().trim();
 
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
-                            } else {
-                                Log.d(FIREBASE_LOG, "loginUserWithEmailAndPass:failure", task.getException());
-                                handleFirebaseLoginErrors(task);
-                            }
+                    signInTask -> {
+                        if (signInTask.isSuccessful()) {
+                            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                        } else {
+                            Log.d(FIREBASE_LOG, "loginUserWithEmailAndPass:failure", signInTask.getException());
+                            handleFirebaseLoginErrors(signInTask);
                         }
                     }
             );
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), LoginActivity.this).show();
         }
     }
 
@@ -112,13 +111,13 @@ public class LoginActivity extends AppCompatActivity {
         try {
             throw task.getException();
         } catch (FirebaseAuthInvalidCredentialsException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
         } catch (FirebaseAuthInvalidUserException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error), getString(R.string.login_invalid_credentials_msg), LoginActivity.this).show();
         }
 
         catch (Exception e) {
-            DialogUtils.buildAlertDialog(getString(R.string.login_error),e.getMessage(), LoginActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.login_error),e.getMessage(), LoginActivity.this).show();
         } finally {
             progressBar.setVisibility(View.GONE);
         }
@@ -134,6 +133,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void doGoogleSilentSignIn(GoogleSignInService googleSignInService) {
+        Task<GoogleSignInAccount> task = googleSignInService.getGoogleSignInClient(getApplicationContext()).silentSignIn();
+
+        if (task.isSuccessful()) {
+            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            task.addOnCompleteListener(signInTask -> {
+                progressBar.setVisibility(View.GONE);
+                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+            });
+        }
+    }
+
     private void handleGoolgeSignInResult(Task<GoogleSignInAccount> task) {
 
         try{
@@ -141,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
         } catch (ApiException e) {
             Log.d("Google error", e.getMessage());
-            DialogUtils.buildAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);
+            DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);
         }
     }
 
@@ -155,51 +168,27 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
             finish();
         } else if (GoogleSignIn.getLastSignedInAccount(this) != null) {
-            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
-            finish();
+            doGoogleSilentSignIn(this.googleSignInService);
         }
     }
 
-    private void disableLoginBtnWhenEmptyInputs() {
+    private TextWatcher loginInputValidator(EditText editText) {
 
-        emailEditText.addTextChangedListener(new TextWatcher() {
+        return new TextValidator(editText) {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+            public void validate(String text) {
+                validateLoginInputs();
             }
+        };
+    }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().trim().length() == 0) {
-                    loginButton.setEnabled(false);
-                } else if (passwordEditText.getText().toString().length() > 0) {
-                    loginButton.setEnabled(true);
-                }
-            }
-        });
+    private void validateLoginInputs() {
 
-        passwordEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() == 0) {
-                    loginButton.setEnabled(false);
-                } else if (emailEditText.getText().toString().length() > 0) {
-                    loginButton.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        if (emailEditText.getText() == null || emailEditText.getText().toString().isEmpty()
+                || passwordEditText == null || passwordEditText.getText().toString().isEmpty()) {
+            loginButton.setEnabled(false);
+        } else {
+            loginButton.setEnabled(true);
+        }
     }
 }

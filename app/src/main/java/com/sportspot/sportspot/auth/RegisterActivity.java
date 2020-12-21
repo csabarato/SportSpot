@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.KeyboardUtils;
+import com.sportspot.sportspot.utils.TextValidator;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -55,7 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
         emailEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
         passwordEditText.setOnFocusChangeListener(KeyboardUtils.getKeyboardHiderListener(this));
 
-        disableSignupBtnWhenEmptyInputs();
+        emailEditText.addTextChangedListener(registerInputValidator(emailEditText));
+        passwordEditText.addTextChangedListener(registerInputValidator(passwordEditText));
 
         // Get Firebase instance
         firebaseAuth = FirebaseAuth.getInstance();
@@ -72,21 +74,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                    task -> {
 
-                            if (task.isSuccessful()) {
-                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                            } else {
-                                Log.d(FIREBASE_LOG, "createUserWithEmail:failure", task.getException());
-                                handleFirebaseSignupErrors(task);
-                            }
+                        if (task.isSuccessful()) {
+                            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                        } else {
+                            Log.d(FIREBASE_LOG, "createUserWithEmail:failure", task.getException());
+                            handleFirebaseSignupErrors(task);
                         }
                     }
             );
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.no_interner_error_title), getString(R.string.no_interner_error_message), RegisterActivity.this).show();
         }
     }
 
@@ -100,61 +99,37 @@ public class RegisterActivity extends AppCompatActivity {
         try {
             throw task.getException();
         } catch(FirebaseAuthWeakPasswordException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.password_weak_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.password_weak_msg), RegisterActivity.this).show();
         } catch(FirebaseAuthInvalidCredentialsException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.invalid_email_format_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.invalid_email_format_msg), RegisterActivity.this).show();
         } catch(FirebaseAuthUserCollisionException e) {
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), getString(R.string.email_collision_msg), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), getString(R.string.email_collision_msg), RegisterActivity.this).show();
         } catch(Exception e) {
             Log.e(FIREBASE_LOG, e.getMessage());
-            DialogUtils.buildAlertDialog(getString(R.string.signup_error), e.getMessage(), RegisterActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.signup_error), e.getMessage(), RegisterActivity.this).show();
         } finally {
             progressBar.setVisibility(View.GONE);
         }
     }
 
 
-    private void disableSignupBtnWhenEmptyInputs() {
+    private TextWatcher registerInputValidator(EditText editText) {
 
-        emailEditText.addTextChangedListener(new TextWatcher() {
+        return new TextValidator(editText) {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void validate(String text) {
+                validateRegisterInputs();
             }
+        };
+    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+    private void validateRegisterInputs() {
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().trim().length() == 0) {
-                    signupBtn.setEnabled(false);
-                } else if (passwordEditText.getText().toString().length() > 0) {
-                    signupBtn.setEnabled(true);
-                }
-            }
-        });
-
-        passwordEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() == 0) {
-                    signupBtn.setEnabled(false);
-                } else if (emailEditText.getText().toString().length() > 0) {
-                    signupBtn.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        if (emailEditText.getText() == null || emailEditText.getText().toString().isEmpty()
+                || passwordEditText == null || passwordEditText.getText().toString().isEmpty()) {
+            signupBtn.setEnabled(false);
+        } else {
+            signupBtn.setEnabled(true);
+        }
     }
 }

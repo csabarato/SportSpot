@@ -36,3 +36,5 @@ local.properties
 ehthumbs.db
 Thumbs.db
 .idea/
+/app/google-services.json
+/TODO.txt

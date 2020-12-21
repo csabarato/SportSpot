@@ -42,6 +42,16 @@
         </activity>
 
         <activity
+            android:name=".menus.new_activity.NewActivityAcitvity"
+            android:launchMode="singleTask"
+            android:parentActivityName=".main_menu.MainMenuActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".main_menu.MainMenuActivity" />
+        </activity>
+
+        <activity
             android:name=".auth.RegisterActivity"
             android:configChanges="keyboardHidden|orientation"
             android:noHistory="true"

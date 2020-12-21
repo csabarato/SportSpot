@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/new_activity_details_fragment"
+    >
+
+    <fragment
+        android:id="@+id/new_activity_details_fragment"
+        android:name="com.sportspot.sportspot.menus.new_activity.new_activity_fragments.ActivityDetailsFragment"
+        android:label="New Activity details"
+        tools:layout="@layout/activity_details_fragment">
+
+        <action
+            android:id="@+id/action_Details_to_Location"
+            app:destination="@id/new_activity_location_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/new_activity_location_fragment"
+        android:name="com.sportspot.sportspot.menus.new_activity.new_activity_fragments.ActivityLocationFragment"
+        android:label="New Activity location"
+        tools:layout="@layout/activity_location_fragment">
+
+        <action
+            android:id="@+id/action_Location_to_Details"
+            app:destination="@id/new_activity_details_fragment" />
+    </fragment>
+
+</navigation>

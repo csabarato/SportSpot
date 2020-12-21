@@ -48,7 +48,7 @@ public class UserProfileActivity extends AppCompatActivity {
         } else if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             setupProfileDetails(FirebaseAuth.getInstance().getCurrentUser());
         } else {
-            DialogUtils.buildAlertDialog(getString(R.string.auth_error_title),getString(R.string.no_authorized_user_message), UserProfileActivity.this).show();
+            DialogUtils.createAlertDialog(getString(R.string.auth_error_title),getString(R.string.no_authorized_user_message), UserProfileActivity.this).show();
         }
     }
 
