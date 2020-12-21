@@ -3,13 +3,16 @@ package com.sportspot.sportspot.service;
 import android.net.Uri;
 
 
+import com.sportspot.sportspot.converter.ActivityConverter;
+import com.sportspot.sportspot.dto.ActivityRequestDto;
+import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.response_model.ResponseModel;
-import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -27,15 +30,15 @@ public class ActivityService {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    public static ResponseModel<String> addNewActivity(ActivityDetailsViewModel activityDetails, String googleIdToken) {
+    public static ResponseModel<String> addNewActivity(ActivityRequestDto activityReqDto, String googleIdToken) {
 
-        ResponseModel<String> helloResponse = new ResponseModel<>();
+        ResponseModel<String> responseModel = new ResponseModel<>();
 
         Uri builtUri = Uri.parse(local_url).buildUpon()
                 .appendPath("activity")
                 .build();
 
-        String json = activityDetails.toJson();
+        String json = activityReqDto.toJson();
         RequestBody requestBody = RequestBody.create(JSON, json);
 
         try {
@@ -50,17 +53,51 @@ public class ActivityService {
             Response response = client.newCall(request).execute();
 
             if (response.code() == HttpURLConnection.HTTP_CREATED) {
-                helloResponse.setData(response.body().string());
+                responseModel.setData(response.body().string());
             } else {
-                helloResponse.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
+                responseModel.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
             }
 
 
-            return helloResponse;
+            return responseModel;
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
-            helloResponse.setErrors(Collections.singletonList(e.getMessage()));
-            return helloResponse;
+            responseModel.setErrors(Collections.singletonList(e.getMessage()));
+            return responseModel;
+        }
+    }
+
+    public static ResponseModel<List<ActivityResponseDto>> getActivities(String googleIdToken) {
+
+        ResponseModel<List<ActivityResponseDto>> responseModel = new ResponseModel<>();
+
+        Uri builtUri = Uri.parse(local_url).buildUpon()
+                .appendPath("activities")
+                .build();
+
+        try {
+
+            Request request = new Request.Builder()
+                    .url(builtUri.toString())
+                    .addHeader("Authorization", "Bearer "+ googleIdToken)
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+
+                List<ActivityResponseDto> activityDtoList = ActivityConverter.convertToResponseDtoList(response.body().string());
+                responseModel.setData(activityDtoList);
+            } else {
+                responseModel.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
+            }
+
+            return responseModel;
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+            responseModel.setErrors(Collections.singletonList(e.getMessage()));
+            return responseModel;
         }
     }
 }

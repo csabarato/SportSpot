@@ -2,12 +2,9 @@ package com.sportspot.sportspot.view_model;
 
 import androidx.lifecycle.ViewModel;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Calendar;
 
-public class ActivityDetailsViewModel extends ViewModel {
+public class ActivityViewModel extends ViewModel {
 
     private String description;
     private String sportType;
@@ -62,16 +59,5 @@ public class ActivityDetailsViewModel extends ViewModel {
 
     public void setNumOfPersons(Integer numOfPersons) {
         this.numOfPersons = numOfPersons;
-    }
-
-    public String toJson() {
-
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

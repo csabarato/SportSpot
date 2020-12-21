@@ -25,7 +25,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.utils.TextValidator;
-import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
+import com.sportspot.sportspot.view_model.ActivityViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,7 +35,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private EditText activityDescEditText, startDateEditText, startTimeEditText, numOfPersonsEditText;
     private ImageView startDatePickerIcon, startTimePickerIcon;
-    private ActivityDetailsViewModel activityDetailsViewModel;
+    private ActivityViewModel activityViewModel;
     private AutoCompleteTextView sportTypeDropdown;
     private String selectedSportType = null;
     private boolean isDetailsFormValid;
@@ -86,16 +86,16 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         setupSportTypeDropdown();
 
-        activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
-        if (activityDetailsViewModel != null) {
-            restoreDataFromViewModel(activityDetailsViewModel);
+        activityViewModel = ViewModelProviders.of(getActivity()).get(ActivityViewModel.class);
+        if (activityViewModel != null) {
+            restoreDataFromViewModel(activityViewModel);
         }
 
         nextToLocationButton.setOnClickListener(this);
         return view;
     }
 
-    private void restoreDataFromViewModel(ActivityDetailsViewModel adViewModel) {
+    private void restoreDataFromViewModel(ActivityViewModel adViewModel) {
 
         if (adViewModel.getSportType() != null) {
             selectedSportType = adViewModel.getSportType();
@@ -251,9 +251,9 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private void saveData() {
 
-        activityDetailsViewModel.setSportType(selectedSportType);
-        activityDetailsViewModel.setStartDate(startDatetimeCalendar);
-        activityDetailsViewModel.setNumOfPersons(Integer.parseInt(numOfPersonsEditText.getText().toString()));
-        activityDetailsViewModel.setDescription(activityDescEditText.getText().toString());
+        activityViewModel.setSportType(selectedSportType);
+        activityViewModel.setStartDate(startDatetimeCalendar);
+        activityViewModel.setNumOfPersons(Integer.parseInt(numOfPersonsEditText.getText().toString()));
+        activityViewModel.setDescription(activityDescEditText.getText().toString());
     }
 }

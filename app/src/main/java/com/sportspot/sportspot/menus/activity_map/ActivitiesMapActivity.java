@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.dto.ActivityResponseDto;
+import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
 
@@ -17,19 +20,24 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.List;
 public class ActivitiesMapActivity extends AppCompatActivity {
 
     private MapView map = null;
+    private AsyncTaskRunner asyncTaskRunner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities_map);
+
+        asyncTaskRunner = new AsyncTaskRunner();
 
         // Load and initialize the osmdroid configuration
         Context ctx = getApplicationContext();
@@ -56,6 +64,28 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         } else {
             DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
+
+        loadActivities();
+    }
+
+    private void loadActivities() {
+        asyncTaskRunner.executeAsync(new GetActivitiesTask(GoogleSignInService.getLastUserToken(this)),
+                (data) -> {
+                    List<ActivityResponseDto> activityResponseDtos = data.getData();
+
+                    for (ActivityResponseDto dto : activityResponseDtos) {
+                        Marker marker = new Marker(map);
+                        marker.setId(dto.get_id());
+
+
+                        marker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
+                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+                        marker.setTitle(marker.getId());
+
+                        map.getOverlays().add(marker);
+                    }
+        });
+
     }
 
     private void setToolbar() {

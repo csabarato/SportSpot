@@ -25,13 +25,14 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.SharedPrefConst;
+import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.ShowcaseSequence;
-import com.sportspot.sportspot.view_model.ActivityDetailsViewModel;
+import com.sportspot.sportspot.view_model.ActivityViewModel;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -47,7 +48,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class ActivityLocationFragment extends Fragment implements View.OnClickListener , MapEventsReceiver {
 
-    private ActivityDetailsViewModel activityDetailsViewModel;
+    private ActivityViewModel activityViewModel;
     private MapView map;
     private GeoPoint currentLocation = null;
     private FragmentTransaction ft;
@@ -99,7 +100,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             }
         }
 
-        activityDetailsViewModel = ViewModelProviders.of(getActivity()).get(ActivityDetailsViewModel.class);
+        activityViewModel = ViewModelProviders.of(getActivity()).get(ActivityViewModel.class);
         restoreDataFromViewModel();
 
         progressDialog = new ProgressDialog(getActivity());
@@ -194,8 +195,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
         activityLocationMarker.setIcon(newLocationIcon);
 
-        activityDetailsViewModel.setLocationLat(position.getLatitude());
-        activityDetailsViewModel.setLocationLon(position.getLongitude());
+        activityViewModel.setLocationLat(position.getLatitude());
+        activityViewModel.setLocationLon(position.getLongitude());
         map.getOverlays().add(activityLocationMarker);
 
         submitDetailsButton.setClickable(true);
@@ -215,8 +216,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             public void onMarkerDragEnd(Marker marker) {
 
 
-                activityDetailsViewModel.setLocationLat(marker.getPosition().getLatitude());
-                activityDetailsViewModel.setLocationLon(marker.getPosition().getLongitude());
+                activityViewModel.setLocationLat(marker.getPosition().getLatitude());
+                activityViewModel.setLocationLon(marker.getPosition().getLongitude());
                 map.getController().animateTo(activityLocationMarker.getPosition());
 
             }
@@ -229,9 +230,9 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     }
 
     private void restoreDataFromViewModel() {
-        if (activityDetailsViewModel.getLocationLat() != null && activityDetailsViewModel.getLocationLon() != null) {
+        if (activityViewModel.getLocationLat() != null && activityViewModel.getLocationLon() != null) {
 
-            GeoPoint position = new GeoPoint(activityDetailsViewModel.getLocationLat(), activityDetailsViewModel.getLocationLon());
+            GeoPoint position = new GeoPoint(activityViewModel.getLocationLat(), activityViewModel.getLocationLon());
             setActivityLocationMarker(position);
 
             submitDetailsButton.setClickable(true);
@@ -258,7 +259,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         showProgressDialog();
         asyncTaskRunner.executeAsync(new PostNewActivityTask(
-                activityDetailsViewModel,
+                ActivityConverter.convertToRequestDto(activityViewModel),
                 GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
 
                     hideProgressDialog();
