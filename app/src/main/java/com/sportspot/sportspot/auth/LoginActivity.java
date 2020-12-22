@@ -25,7 +25,10 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.converter.UserDataConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
+import com.sportspot.sportspot.service.tasks.SyncUserDataTask;
+import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.KeyboardUtils;
 import com.sportspot.sportspot.utils.TextValidator;
@@ -66,8 +69,6 @@ public class LoginActivity extends AppCompatActivity {
 
         googleSignInService = new GoogleSignInService(getApplicationContext(), LoginActivity.this);
         googleSingInButton.setOnClickListener(googleSignInService);
-
-        /*doGoogleSilentSignIn(googleSignInService);*/
 
         // setup ConnectivityManager
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -136,13 +137,21 @@ public class LoginActivity extends AppCompatActivity {
     private void doGoogleSilentSignIn(GoogleSignInService googleSignInService) {
         Task<GoogleSignInAccount> task = googleSignInService.getGoogleSignInClient(getApplicationContext()).silentSignIn();
 
+        // If there's immediate result already
         if (task.isSuccessful()) {
             startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
         } else {
             progressBar.setVisibility(View.VISIBLE);
             task.addOnCompleteListener(signInTask -> {
-                progressBar.setVisibility(View.GONE);
-                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+
+                try {
+                    signInTask.getResult(ApiException.class);
+                    progressBar.setVisibility(View.GONE);
+                    startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+
+                } catch (ApiException apiException) {
+                    DialogUtils.createAlertDialog("Google Sign In error", apiException.getMessage(), LoginActivity.this);
+                }
             });
         }
     }
@@ -151,7 +160,21 @@ public class LoginActivity extends AppCompatActivity {
 
         try{
             GoogleSignInAccount account = task.getResult(ApiException.class);
-            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+
+            // Sync User data with Database
+            AsyncTaskRunner.getInstance().executeAsync(
+                    new SyncUserDataTask(
+                            UserDataConverter.convertAccountToUserDataDto(account),
+                            account.getIdToken()),
+                        data -> {
+                            if (data.getErrors().isEmpty()) {
+                                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                            } else {
+                                DialogUtils.createAlertDialog(
+                                        getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
+                            }
+                    });
+
         } catch (ApiException e) {
             Log.d("Google error", e.getMessage());
             DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);

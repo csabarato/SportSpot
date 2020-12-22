@@ -1,19 +1,17 @@
-package com.sportspot.sportspot.menus.new_activity;
+package com.sportspot.sportspot.service.tasks;
 
 import com.sportspot.sportspot.dto.ActivityRequestDto;
 import com.sportspot.sportspot.response_model.ResponseModel;
 import com.sportspot.sportspot.service.ActivityService;
 
 
-import java.util.concurrent.Callable;
 
-public class PostNewActivityTask implements Callable<ResponseModel<String>> {
+public class PostNewActivityTask extends BaseAsyncTask<String> {
 
-    private String googleIdToken;
-    private ActivityRequestDto activityReqDto;
+    private final ActivityRequestDto activityReqDto;
 
     public PostNewActivityTask(ActivityRequestDto activityReqDto, String googleIdToken) {
-        this.googleIdToken = googleIdToken;
+        super(googleIdToken);
         this.activityReqDto = activityReqDto;
     }
 

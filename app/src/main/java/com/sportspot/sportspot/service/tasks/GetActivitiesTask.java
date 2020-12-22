@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.menus.activity_map;
+package com.sportspot.sportspot.service.tasks;
 
 import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.response_model.ResponseModel;
@@ -7,12 +7,10 @@ import com.sportspot.sportspot.service.ActivityService;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class GetActivitiesTask implements Callable<ResponseModel<List<ActivityResponseDto>>> {
-
-    private String googleIdToken;
+public class GetActivitiesTask extends BaseAsyncTask<List<ActivityResponseDto>> {
 
     public GetActivitiesTask(String googleIdToken) {
-        this.googleIdToken = googleIdToken;
+        super(googleIdToken);
     }
 
     @Override

@@ -81,6 +81,9 @@
     <string name="location_unavailable_title">Location not found</string>
     <string name="location_unavailable_message">Please check that location is enabled"</string>
 
+    <string name="user_data_sync_error_title">Error at sync user data</string>
+    <string name="activities_load_error">Failed to load activities</string>
+
     <!--Showcase view messages -->
     <string name="activity_location_showcase_title">Select loaction to your activity</string>
     <string name="activity_location_showcase_text">Press and hold to select location.</string>

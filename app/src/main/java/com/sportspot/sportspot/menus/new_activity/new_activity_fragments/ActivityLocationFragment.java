@@ -27,7 +27,7 @@ import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.SharedPrefConst;
 import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
-import com.sportspot.sportspot.menus.new_activity.PostNewActivityTask;
+import com.sportspot.sportspot.service.tasks.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
@@ -282,13 +282,10 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     }
 
     private void waitAndNavigateToMainMenu() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(getActivity(), MainMenuActivity.class));
-                if (getActivity() != null) {
-                    getActivity().finish();
-                }
+        new Handler().postDelayed(() -> {
+            startActivity(new Intent(getActivity(), MainMenuActivity.class));
+            if (getActivity() != null) {
+                getActivity().finish();
             }
         }, 1500);
     }

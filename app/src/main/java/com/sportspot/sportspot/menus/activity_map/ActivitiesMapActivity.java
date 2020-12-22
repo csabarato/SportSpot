@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
+import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
@@ -71,18 +72,24 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     private void loadActivities() {
         asyncTaskRunner.executeAsync(new GetActivitiesTask(GoogleSignInService.getLastUserToken(this)),
                 (data) -> {
-                    List<ActivityResponseDto> activityResponseDtos = data.getData();
 
-                    for (ActivityResponseDto dto : activityResponseDtos) {
-                        Marker marker = new Marker(map);
-                        marker.setId(dto.get_id());
+                    if (data.getErrors().isEmpty() && data.getData() != null) {
+                        List<ActivityResponseDto> activityResponseDtos = data.getData();
+
+                        for (ActivityResponseDto dto : activityResponseDtos) {
+                            Marker marker = new Marker(map);
+                            marker.setId(dto.get_id());
 
 
-                        marker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
-                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-                        marker.setTitle(marker.getId());
+                            marker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+                            marker.setTitle(marker.getId());
 
-                        map.getOverlays().add(marker);
+                            map.getOverlays().add(marker);
+                        }
+                    } else {
+                        DialogUtils.createAlertDialog(
+                                getString(R.string.activities_load_error), String.join(";", data.getErrors()), ActivitiesMapActivity.this).show();
                     }
         });
 

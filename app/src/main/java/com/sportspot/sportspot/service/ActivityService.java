@@ -3,10 +3,13 @@ package com.sportspot.sportspot.service;
 import android.net.Uri;
 
 
+import com.sportspot.sportspot.constants.ConfigConstants;
+import com.sportspot.sportspot.constants.MediaTypes;
 import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.dto.ActivityRequestDto;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.utils.ConfigUtil;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -14,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -22,24 +24,19 @@ import okhttp3.Response;
 
 public class ActivityService {
 
-    private static OkHttpClient client = new OkHttpClient();
-
-    private static String base_url = "https://oauth2.googleapis.com/tokeninfo";
-    private static String local_url = "ngrok_url";
-
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final String api_url = ConfigUtil.getDevProperties().getProperty(ConfigConstants.API_URL);
 
     public static ResponseModel<String> addNewActivity(ActivityRequestDto activityReqDto, String googleIdToken) {
 
         ResponseModel<String> responseModel = new ResponseModel<>();
 
-        Uri builtUri = Uri.parse(local_url).buildUpon()
+        Uri builtUri = Uri.parse(api_url).buildUpon()
                 .appendPath("activity")
                 .build();
 
         String json = activityReqDto.toJson();
-        RequestBody requestBody = RequestBody.create(JSON, json);
+        RequestBody requestBody = RequestBody.create(MediaTypes.JSON, json);
 
         try {
 
@@ -71,7 +68,7 @@ public class ActivityService {
 
         ResponseModel<List<ActivityResponseDto>> responseModel = new ResponseModel<>();
 
-        Uri builtUri = Uri.parse(local_url).buildUpon()
+        Uri builtUri = Uri.parse(api_url).buildUpon()
                 .appendPath("activities")
                 .build();
 

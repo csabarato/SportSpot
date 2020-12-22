@@ -5,7 +5,7 @@ import java.util.List;
 public class ActivityResponseDto {
 
     private String _id;
-    private String owner;
+    private UserDataDto owner;
     private SportTypeDto sportType;
     private Double locationLatitude;
     private Double locationLongitude;
@@ -22,11 +22,11 @@ public class ActivityResponseDto {
         this._id = _id;
     }
 
-    public String getOwner() {
+    public UserDataDto getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(UserDataDto owner) {
         this.owner = owner;
     }
 
