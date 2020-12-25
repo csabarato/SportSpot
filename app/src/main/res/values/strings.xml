@@ -58,6 +58,12 @@
         <item>Teqball</item>
     </string-array>
 
+    <!-- Map of Activities page -->
+    <string name="activity_info_owner_label">Owner :</string>
+    <string name="activity_info_sport_type_label">Sport type :</string>
+    <string name="activity_info_nop_label">Remaining places :</string>
+    <string name="activity_info_start_date_label">Starts at :</string>
+    <string name="activity_info_desc_label">Description :</string>
 
     <!--New activity - Location page -->
     <string name="new_activity_loaction_back_btn"> Back </string>
@@ -90,7 +96,6 @@
     <string name="activity_location_drag_showcase_title">Change location of your activity</string>
     <string name="activity_location_drag_showcase_text">You can drag and drop the location marker to change location.</string>
     <string name="my_location_showcase_text">Tap My Location button, to center map to your current location.</string>
-
 
 
 </resources>

@@ -22,7 +22,7 @@ public class ActivityConverter {
         requestDto.setStartDate(activityViewModel.getStartDate().getTimeInMillis());
         requestDto.setNumOfPersons(activityViewModel.getNumOfPersons());
 
-        if (requestDto.getDescription() != null && !requestDto.getDescription().isEmpty()) {
+        if (activityViewModel.getDescription() != null && !activityViewModel.getDescription().isEmpty()) {
             requestDto.setDescription(activityViewModel.getDescription());
         }
 
@@ -34,9 +34,7 @@ public class ActivityConverter {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            List<ActivityResponseDto> list = objectMapper.readValue(json, new TypeReference<List<ActivityResponseDto>>() {});
-            return list;
-
+            return objectMapper.readValue(json, new TypeReference<List<ActivityResponseDto>>() {});
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;

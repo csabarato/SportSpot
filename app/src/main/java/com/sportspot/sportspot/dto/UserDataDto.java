@@ -10,6 +10,7 @@ public class UserDataDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String username;
 
     public String get_id() {
         return _id;
@@ -41,6 +42,27 @@ public class UserDataDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getDisplayName() {
+
+        if (username != null && !username.isEmpty()) {
+            return username;
+        } else if (
+            firstName != null && !firstName.isEmpty() &&
+            lastName != null && !lastName.isEmpty()) {
+                return firstName +" "+ lastName;
+        } else {
+            return email;
+        }
     }
 
     public String toJSON() {

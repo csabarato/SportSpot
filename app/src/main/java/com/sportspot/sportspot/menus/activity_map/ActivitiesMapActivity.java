@@ -2,8 +2,10 @@ package com.sportspot.sportspot.menus.activity_map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
@@ -11,6 +13,7 @@ import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
+import com.sportspot.sportspot.shared.ActivityInfoWindow;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
@@ -24,6 +27,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -74,19 +78,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 (data) -> {
 
                     if (data.getErrors().isEmpty() && data.getData() != null) {
-                        List<ActivityResponseDto> activityResponseDtos = data.getData();
-
-                        for (ActivityResponseDto dto : activityResponseDtos) {
-                            Marker marker = new Marker(map);
-                            marker.setId(dto.get_id());
-
-
-                            marker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
-                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-                            marker.setTitle(marker.getId());
-
-                            map.getOverlays().add(marker);
-                        }
+                        showActivityMarkers(data.getData());
                     } else {
                         DialogUtils.createAlertDialog(
                                 getString(R.string.activities_load_error), String.join(";", data.getErrors()), ActivitiesMapActivity.this).show();
@@ -128,5 +120,25 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         CompassOverlay mCompassOverlay = new CompassOverlay(getApplication(), new InternalCompassOrientationProvider(getApplicationContext()), map);
         mCompassOverlay.enableCompass();
         map.getOverlays().add(mCompassOverlay);
+    }
+
+    private void showActivityMarkers(List<ActivityResponseDto> activityDtos) {
+
+        for (ActivityResponseDto dto : activityDtos) {
+            Marker activityMarker = new Marker(map);
+            activityMarker.setId(dto.get_id());
+
+            activityMarker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
+            activityMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+            activityMarker.setTitle(activityMarker.getId());
+
+            InfoWindow actIW=new ActivityInfoWindow(R.layout.activity_info_window, map, dto);
+            activityMarker.setInfoWindow(actIW);
+
+            Drawable activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
+            activityMarker.setIcon(activityLocationIcon);
+
+            map.getOverlays().add(activityMarker);
+        }
     }
 }

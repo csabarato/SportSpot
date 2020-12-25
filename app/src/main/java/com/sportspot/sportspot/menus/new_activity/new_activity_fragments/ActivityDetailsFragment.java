@@ -1,6 +1,5 @@
 package com.sportspot.sportspot.menus.new_activity.new_activity_fragments;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -24,12 +23,11 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.TextValidator;
 import com.sportspot.sportspot.view_model.ActivityViewModel;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
@@ -45,8 +43,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
     
     private Calendar startDatetimeCalendar = Calendar.getInstance();
 
-    private final SimpleDateFormat startDateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final SimpleDateFormat startTimeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
 
     public ActivityDetailsFragment() {
     }
@@ -104,8 +101,8 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         if (adViewModel.getStartDate() != null) {
             startDatetimeCalendar = adViewModel.getStartDate();
-            startDateEditText.setText(startDateFormatter.format(startDatetimeCalendar.getTime()));
-            startTimeEditText.setText(startTimeFormatter.format(startDatetimeCalendar.getTime()));
+            startDateEditText.setText(DateUtils.toDateString(startDatetimeCalendar.getTime()));
+            startTimeEditText.setText(DateUtils.toTimeString(startDatetimeCalendar.getTime()));
         }
 
         if(adViewModel.getNumOfPersons() != null) {
@@ -121,7 +118,6 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
         setupSportTypeDropdown(null);
     }
 
-    @SuppressLint("NewApi")
     private void setupSportTypeDropdown(String defaultValue) {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.sport_type_items_array, R.layout.sport_type_dropdown_item);
@@ -171,7 +167,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
                 startDatetimeCalendar.set(Calendar.MONTH, month);
                 startDatetimeCalendar.set(Calendar.DATE, dayOfMonth);
 
-                startDateEditText.setText(startDateFormatter.format(startDatetimeCalendar.getTime()));
+                startDateEditText.setText(DateUtils.toDateString(startDatetimeCalendar.getTime()));
                 validateStartDateInput();
                 }, startDatetimeCalendar.get(Calendar.YEAR), startDatetimeCalendar.get(Calendar.MONTH), startDatetimeCalendar.get(Calendar.DATE));
 
@@ -187,7 +183,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
                 startDatetimeCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 startDatetimeCalendar.set(Calendar.MINUTE, minute);
 
-                startTimeEditText.setText(startTimeFormatter.format(startDatetimeCalendar.getTime()));
+                startTimeEditText.setText(DateUtils.toTimeString(startDatetimeCalendar.getTime()));
                 validateStartTimeInput();
                 }, startDatetimeCalendar.get(Calendar.HOUR_OF_DAY), startDatetimeCalendar.get(Calendar.MINUTE), true);
 
