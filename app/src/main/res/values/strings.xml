@@ -60,6 +60,7 @@
 
     <!-- Map of Activities page -->
     <string name="activity_info_owner_label">Owner :</string>
+    <string name="info_window_owner_me">Me</string>
     <string name="activity_info_sport_type_label">Sport type :</string>
     <string name="activity_info_nop_label">Remaining places :</string>
     <string name="activity_info_start_date_label">Starts at :</string>

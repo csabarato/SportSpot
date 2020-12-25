@@ -135,7 +135,12 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             InfoWindow actIW=new ActivityInfoWindow(R.layout.activity_info_window, map, dto);
             activityMarker.setInfoWindow(actIW);
 
-            Drawable activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
+            Drawable activityLocationIcon;
+            if (GoogleSignInService.isIdEqualsCurrentUserId(getApplicationContext(), dto.getOwner().get_id())) {
+                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_my_activity_location);
+            } else {
+                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
+            }
             activityMarker.setIcon(activityLocationIcon);
 
             map.getOverlays().add(activityMarker);

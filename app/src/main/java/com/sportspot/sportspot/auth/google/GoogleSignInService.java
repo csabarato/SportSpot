@@ -53,4 +53,8 @@ public class GoogleSignInService implements View.OnClickListener {
     public static String getLastUserToken(Context context) {
         return GoogleSignIn.getLastSignedInAccount(context).getIdToken();
     }
+
+    public static Boolean isIdEqualsCurrentUserId(Context context, String id) {
+        return GoogleSignIn.getLastSignedInAccount(context).getId().equals(id);
+    }
 }

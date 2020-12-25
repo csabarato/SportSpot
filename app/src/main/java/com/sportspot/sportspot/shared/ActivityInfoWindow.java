@@ -3,6 +3,8 @@ package com.sportspot.sportspot.shared;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.utils.DateUtils;
 
@@ -35,9 +37,14 @@ public class ActivityInfoWindow extends InfoWindow {
         TextView activityInfoDescLabel = mView.findViewById(id.activity_info_desc_label);
         TextView activityInfoDesc = mView.findViewById(id.activity_info_desc);
 
-        activityInfoOwner.setText(activityDto.getOwner().getDisplayName());
+        if (GoogleSignInService.isIdEqualsCurrentUserId(mView.getContext(), activityDto.getOwner().get_id())) {
+            activityInfoOwner.setText(string.info_window_owner_me);
+        } else {
+            activityInfoOwner.setText(activityDto.getOwner().getDisplayName());
+        }
+
         activityInfoSportType.setText(activityDto.getSportType().getName());
-        activityInfoNoP.setText(Integer.toString(activityDto.getNumOfPersons()));
+        activityInfoNoP.setText(Integer.toString(activityDto.getNumOfPersons() - activityDto.getSignedUpUsers().size()));
         activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activityDto.getStartDate())));
 
         if (activityDto.getDescription() != null && !activityDto.getDescription().isEmpty()) {
