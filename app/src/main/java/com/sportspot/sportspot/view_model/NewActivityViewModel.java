@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Calendar;
 
-public class ActivityViewModel extends ViewModel {
+public class NewActivityViewModel extends ViewModel {
 
     private String description;
     private String sportType;

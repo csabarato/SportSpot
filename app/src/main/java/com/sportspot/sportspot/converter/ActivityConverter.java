@@ -5,25 +5,25 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sportspot.sportspot.dto.ActivityRequestDto;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
-import com.sportspot.sportspot.view_model.ActivityViewModel;
+import com.sportspot.sportspot.view_model.NewActivityViewModel;
 
 import java.util.List;
 
 
 public class ActivityConverter {
 
-    public static ActivityRequestDto convertToRequestDto(ActivityViewModel activityViewModel) {
+    public static ActivityRequestDto convertToRequestDto(NewActivityViewModel newActivityViewModel) {
 
         ActivityRequestDto requestDto = new ActivityRequestDto();
 
-        requestDto.setSportType(activityViewModel.getSportType());
-        requestDto.setLocationLat(activityViewModel.getLocationLat());
-        requestDto.setLocationLon(activityViewModel.getLocationLon());
-        requestDto.setStartDate(activityViewModel.getStartDate().getTimeInMillis());
-        requestDto.setNumOfPersons(activityViewModel.getNumOfPersons());
+        requestDto.setSportType(newActivityViewModel.getSportType());
+        requestDto.setLocationLat(newActivityViewModel.getLocationLat());
+        requestDto.setLocationLon(newActivityViewModel.getLocationLon());
+        requestDto.setStartDate(newActivityViewModel.getStartDate().getTimeInMillis());
+        requestDto.setNumOfPersons(newActivityViewModel.getNumOfPersons());
 
-        if (activityViewModel.getDescription() != null && !activityViewModel.getDescription().isEmpty()) {
-            requestDto.setDescription(activityViewModel.getDescription());
+        if (newActivityViewModel.getDescription() != null && !newActivityViewModel.getDescription().isEmpty()) {
+            requestDto.setDescription(newActivityViewModel.getDescription());
         }
 
         return requestDto;

@@ -32,7 +32,7 @@ import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.ShowcaseSequence;
-import com.sportspot.sportspot.view_model.ActivityViewModel;
+import com.sportspot.sportspot.view_model.NewActivityViewModel;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -48,7 +48,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class ActivityLocationFragment extends Fragment implements View.OnClickListener , MapEventsReceiver {
 
-    private ActivityViewModel activityViewModel;
+    private NewActivityViewModel newActivityViewModel;
     private MapView map;
     private GeoPoint currentLocation = null;
     private FragmentTransaction ft;
@@ -100,7 +100,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             }
         }
 
-        activityViewModel = ViewModelProviders.of(getActivity()).get(ActivityViewModel.class);
+        newActivityViewModel = ViewModelProviders.of(getActivity()).get(NewActivityViewModel.class);
         restoreDataFromViewModel();
 
         progressDialog = new ProgressDialog(getActivity());
@@ -195,8 +195,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
         Drawable newLocationIcon = ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.ic_new_location);
         activityLocationMarker.setIcon(newLocationIcon);
 
-        activityViewModel.setLocationLat(position.getLatitude());
-        activityViewModel.setLocationLon(position.getLongitude());
+        newActivityViewModel.setLocationLat(position.getLatitude());
+        newActivityViewModel.setLocationLon(position.getLongitude());
         map.getOverlays().add(activityLocationMarker);
 
         submitDetailsButton.setClickable(true);
@@ -216,8 +216,8 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
             public void onMarkerDragEnd(Marker marker) {
 
 
-                activityViewModel.setLocationLat(marker.getPosition().getLatitude());
-                activityViewModel.setLocationLon(marker.getPosition().getLongitude());
+                newActivityViewModel.setLocationLat(marker.getPosition().getLatitude());
+                newActivityViewModel.setLocationLon(marker.getPosition().getLongitude());
                 map.getController().animateTo(activityLocationMarker.getPosition());
 
             }
@@ -230,9 +230,9 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     }
 
     private void restoreDataFromViewModel() {
-        if (activityViewModel.getLocationLat() != null && activityViewModel.getLocationLon() != null) {
+        if (newActivityViewModel.getLocationLat() != null && newActivityViewModel.getLocationLon() != null) {
 
-            GeoPoint position = new GeoPoint(activityViewModel.getLocationLat(), activityViewModel.getLocationLon());
+            GeoPoint position = new GeoPoint(newActivityViewModel.getLocationLat(), newActivityViewModel.getLocationLon());
             setActivityLocationMarker(position);
 
             submitDetailsButton.setClickable(true);
@@ -259,7 +259,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         showProgressDialog();
         asyncTaskRunner.executeAsync(new PostNewActivityTask(
-                ActivityConverter.convertToRequestDto(activityViewModel),
+                ActivityConverter.convertToRequestDto(newActivityViewModel),
                 GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
 
                     hideProgressDialog();

@@ -25,7 +25,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.TextValidator;
-import com.sportspot.sportspot.view_model.ActivityViewModel;
+import com.sportspot.sportspot.view_model.NewActivityViewModel;
 
 import java.util.Calendar;
 
@@ -33,7 +33,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private EditText activityDescEditText, startDateEditText, startTimeEditText, numOfPersonsEditText;
     private ImageView startDatePickerIcon, startTimePickerIcon;
-    private ActivityViewModel activityViewModel;
+    private NewActivityViewModel newActivityViewModel;
     private AutoCompleteTextView sportTypeDropdown;
     private String selectedSportType = null;
     private boolean isDetailsFormValid;
@@ -83,34 +83,34 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
         setupSportTypeDropdown();
 
-        activityViewModel = ViewModelProviders.of(getActivity()).get(ActivityViewModel.class);
-        if (activityViewModel != null) {
-            restoreDataFromViewModel(activityViewModel);
+        newActivityViewModel = ViewModelProviders.of(getActivity()).get(NewActivityViewModel.class);
+        if (newActivityViewModel != null) {
+            restoreDataFromViewModel(newActivityViewModel);
         }
 
         nextToLocationButton.setOnClickListener(this);
         return view;
     }
 
-    private void restoreDataFromViewModel(ActivityViewModel adViewModel) {
+    private void restoreDataFromViewModel(NewActivityViewModel newActivityViewModel) {
 
-        if (adViewModel.getSportType() != null) {
-            selectedSportType = adViewModel.getSportType();
+        if (newActivityViewModel.getSportType() != null) {
+            selectedSportType = newActivityViewModel.getSportType();
             setupSportTypeDropdown(selectedSportType);
         }
 
-        if (adViewModel.getStartDate() != null) {
-            startDatetimeCalendar = adViewModel.getStartDate();
+        if (newActivityViewModel.getStartDate() != null) {
+            startDatetimeCalendar = newActivityViewModel.getStartDate();
             startDateEditText.setText(DateUtils.toDateString(startDatetimeCalendar.getTime()));
             startTimeEditText.setText(DateUtils.toTimeString(startDatetimeCalendar.getTime()));
         }
 
-        if(adViewModel.getNumOfPersons() != null) {
-            numOfPersonsEditText.setText(Integer.toString(adViewModel.getNumOfPersons()));
+        if(newActivityViewModel.getNumOfPersons() != null) {
+            numOfPersonsEditText.setText(Integer.toString(newActivityViewModel.getNumOfPersons()));
         }
 
-        if (adViewModel.getDescription() !=  null) {
-            activityDescEditText.setText(adViewModel.getDescription());
+        if (newActivityViewModel.getDescription() !=  null) {
+            activityDescEditText.setText(newActivityViewModel.getDescription());
         }
     }
 
@@ -247,9 +247,9 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
     private void saveData() {
 
-        activityViewModel.setSportType(selectedSportType);
-        activityViewModel.setStartDate(startDatetimeCalendar);
-        activityViewModel.setNumOfPersons(Integer.parseInt(numOfPersonsEditText.getText().toString()));
-        activityViewModel.setDescription(activityDescEditText.getText().toString());
+        newActivityViewModel.setSportType(selectedSportType);
+        newActivityViewModel.setStartDate(startDatetimeCalendar);
+        newActivityViewModel.setNumOfPersons(Integer.parseInt(numOfPersonsEditText.getText().toString()));
+        newActivityViewModel.setDescription(activityDescEditText.getText().toString());
     }
 }
