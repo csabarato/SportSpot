@@ -24,7 +24,7 @@
 
             <ImageButton
                 android:id="@+id/info_close_button"
-
+                android:contentDescription="@string/activity_info_close_desc"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:clickable="true"
@@ -38,8 +38,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/activity_info_owner_label"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/info_close_button" />
@@ -48,11 +46,10 @@
                 android:id="@+id/activity_info_owner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/activity_info_owner_label"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:layout_toEndOf="@+id/activity_info_owner_label"
-                android:paddingStart="15dp"
-                android:paddingEnd="40dp"
                 app:layout_constraintBaseline_toBaselineOf="@+id/activity_info_owner_label"
                 app:layout_constraintStart_toEndOf="@+id/activity_info_owner_label" />
 
@@ -60,9 +57,9 @@
                 android:id="@+id/activity_info_sport_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+
                 android:text="@string/activity_info_sport_type_label"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintStart_toStartOf="@id/activity_info_owner_label"
                 app:layout_constraintTop_toBottomOf="@+id/activity_info_owner" />
@@ -71,6 +68,7 @@
                 android:id="@+id/activity_info_sport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/activity_info_sport_label"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
@@ -81,10 +79,9 @@
                 android:id="@+id/activity_info_nop_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="@string/activity_info_nop_label"
                 android:textAppearance="?attr/textAppearanceBody1"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 app:layout_constraintStart_toStartOf="@id/activity_info_sport_label"
                 app:layout_constraintTop_toBottomOf="@+id/activity_info_sport_label" />
 
@@ -92,6 +89,7 @@
                 android:id="@+id/activity_info_nop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
                 app:layout_constraintBaseline_toBaselineOf="@+id/activity_info_nop_label"
@@ -101,10 +99,9 @@
                 android:id="@+id/activity_info_start_date_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="@string/activity_info_start_date_label"
                 android:textAppearance="?attr/textAppearanceBody1"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 app:layout_constraintStart_toStartOf="@id/activity_info_nop_label"
                 app:layout_constraintTop_toBottomOf="@+id/activity_info_nop_label" />
 
@@ -112,6 +109,7 @@
                 android:id="@+id/activity_info_start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
                 app:layout_constraintBaseline_toBaselineOf="@+id/activity_info_start_date_label"
@@ -121,10 +119,9 @@
                 android:id="@+id/activity_info_desc_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="@string/activity_info_desc_label"
                 android:textAppearance="?attr/textAppearanceBody1"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@id/activity_info_start_date_label"
                 app:layout_constraintTop_toBottomOf="@+id/activity_info_start_date_label" />
@@ -133,13 +130,19 @@
                 android:id="@+id/activity_info_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
                 app:layout_constraintStart_toStartOf="@+id/activity_info_desc_label"
-                app:layout_constraintTop_toBottomOf="@+id/activity_info_desc_label"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/activity_info_desc_label" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/activity_info_apply_btn_text"
+                app:layout_constraintStart_toStartOf="@+id/activity_info_desc_label"
+                app:layout_constraintTop_toBottomOf="@+id/activity_info_desc" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

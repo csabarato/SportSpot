@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,7 @@ import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DialogUtils;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -143,6 +145,28 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             }
             activityMarker.setIcon(activityLocationIcon);
 
+            //
+
+            activityMarker.setOnMarkerClickListener((marker, mapView) -> {
+
+                // Set center when Info window shows
+                Point pixelsPoint = new Point();
+                mapView.getProjection().toPixels(marker.getPosition(), pixelsPoint);
+
+                // Set  offset
+                pixelsPoint.y -= 500;
+
+                final IGeoPoint centerPoint = mapView.getProjection().fromPixels(pixelsPoint.x, pixelsPoint.y);
+                mapView.getController().animateTo(centerPoint);
+
+                if (marker.isInfoWindowOpen()) {
+                    marker.closeInfoWindow();
+                } else {
+                    marker.showInfoWindow();
+                }
+
+                return true;
+            });
             map.getOverlays().add(activityMarker);
         }
     }

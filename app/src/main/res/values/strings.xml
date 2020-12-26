@@ -65,6 +65,8 @@
     <string name="activity_info_nop_label">Remaining places :</string>
     <string name="activity_info_start_date_label">Starts at :</string>
     <string name="activity_info_desc_label">Description :</string>
+    <string name="activity_info_apply_btn_text">Apply</string>
+    <string name="activity_info_close_desc">Close info window</string>
 
     <!--New activity - Location page -->
     <string name="new_activity_loaction_back_btn"> Back </string>
