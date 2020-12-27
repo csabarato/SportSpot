@@ -145,8 +145,6 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             }
             activityMarker.setIcon(activityLocationIcon);
 
-            //
-
             activityMarker.setOnMarkerClickListener((marker, mapView) -> {
 
                 // Set center when Info window shows
