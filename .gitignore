@@ -38,3 +38,4 @@ Thumbs.db
 .idea/
 /app/google-services.json
 /TODO.txt
+/app/src/main/resources/config-local.properties

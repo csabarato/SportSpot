@@ -14,7 +14,7 @@ public class ConfigUtil {
 
         try {
             properties = new Properties();
-            String propFileName = "dev-config.properties";
+            String propFileName = "config-local.properties";
 
             inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propFileName);
 
