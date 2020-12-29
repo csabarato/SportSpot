@@ -176,8 +176,9 @@ public class LoginActivity extends AppCompatActivity {
                     });
 
         } catch (ApiException e) {
+            e.printStackTrace();
             Log.d("Google error", e.getMessage());
-            DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this);
+            DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this).show();
         }
     }
 
