@@ -11,6 +11,9 @@ import com.sportspot.sportspot.dto.ActivityResponseDto;
 import com.sportspot.sportspot.response_model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
@@ -96,5 +99,44 @@ public class ActivityService {
             responseModel.setErrors(Collections.singletonList(e.getMessage()));
             return responseModel;
         }
+    }
+
+    public static ResponseModel<Void> activitySignUp(String googleIdToken, String activityId) {
+
+        ResponseModel<Void> responseModel = new ResponseModel<>();
+
+        Uri builtUri = Uri.parse(api_url).buildUpon()
+                    .appendPath("activity")
+                    .appendPath("sign_up")
+                    .build();
+
+        try {
+
+            // Build request body
+            JSONObject bodyJSONObj = new JSONObject();
+            bodyJSONObj.put("activity", activityId);
+
+            RequestBody body = RequestBody.create(MediaTypes.JSON, bodyJSONObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(builtUri.toString())
+                    .addHeader("Authorization", "Bearer "+ googleIdToken)
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                return responseModel;
+            } else {
+                responseModel.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
+            }
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            responseModel.setErrors(Collections.singletonList(e.getMessage()));
+            return responseModel;
+        }
+        return responseModel;
     }
 }

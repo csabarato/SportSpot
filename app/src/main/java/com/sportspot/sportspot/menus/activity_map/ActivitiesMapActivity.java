@@ -9,14 +9,19 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.dto.ActivityResponseDto;
+import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
-import com.sportspot.sportspot.shared.ActivityInfoWindow;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.LocationProvider;
+import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.DialogUtils;
 
 import org.osmdroid.api.IGeoPoint;
@@ -33,11 +38,14 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.Date;
 import java.util.List;
 public class ActivitiesMapActivity extends AppCompatActivity {
 
     private MapView map = null;
     private AsyncTaskRunner asyncTaskRunner;
+    private Button activitySignUpButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,8 +142,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             activityMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
             activityMarker.setTitle(activityMarker.getId());
 
-            InfoWindow actIW=new ActivityInfoWindow(R.layout.activity_info_window, map, dto);
-            activityMarker.setInfoWindow(actIW);
+            InfoWindow activityInfoWindow = new ActivityInfoWindow(R.layout.activity_info_window, map, dto);
+            activityMarker.setInfoWindow(activityInfoWindow);
 
             Drawable activityLocationIcon;
             if (GoogleSignInService.isIdEqualsCurrentUserId(getApplicationContext(), dto.getOwner().get_id())) {
@@ -166,6 +174,80 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 return true;
             });
             map.getOverlays().add(activityMarker);
+        }
+    }
+
+    public void refreshActivityById(String activityId) {
+        // Load refreshed activty and then reload map.
+
+    }
+
+    // Nested class for Activity info window
+    private class ActivityInfoWindow extends InfoWindow implements View.OnClickListener {
+
+        private final ActivityResponseDto activityDto;
+
+        public ActivityInfoWindow(int layoutResId, MapView mapView, ActivityResponseDto activityDto) {
+            super(layoutResId, mapView);
+            this.activityDto = activityDto;
+        }
+
+        @Override
+        public void onOpen(Object item) {
+
+            TextView activityInfoOwner = mView.findViewById(R.id.activity_info_owner);
+            TextView activityInfoSportType = mView.findViewById(R.id.activity_info_sport);
+            TextView activityInfoNoP = mView.findViewById(R.id.activity_info_nop);
+            TextView activityInfoStartDate = mView.findViewById(R.id.activity_info_start_date);
+            ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
+            activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
+
+            TextView activityInfoDescLabel = mView.findViewById(R.id.activity_info_desc_label);
+            TextView activityInfoDesc = mView.findViewById(R.id.activity_info_desc);
+
+            if (GoogleSignInService.isIdEqualsCurrentUserId(mView.getContext(), activityDto.getOwner().get_id())) {
+                activityInfoOwner.setText(R.string.info_window_owner_me);
+            } else {
+                activitySignUpButton.setVisibility(View.VISIBLE);
+                activityInfoOwner.setText(activityDto.getOwner().getDisplayName());
+            }
+
+            activityInfoSportType.setText(activityDto.getSportType().getName());
+            activityInfoNoP.setText(Integer.toString(activityDto.getNumOfPersons() - activityDto.getSignedUpUsers().size()));
+            activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activityDto.getStartDate())));
+
+            if (activityDto.getDescription() != null && !activityDto.getDescription().isEmpty()) {
+                activityInfoDescLabel.setVisibility(View.VISIBLE);
+                activityInfoDesc.setText(activityDto.getDescription());
+            }
+
+            infoCloseButton.setOnClickListener(onClick -> this.close());
+            activitySignUpButton.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClose() {
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.equals(activitySignUpButton)) {
+                AsyncTaskRunner.getInstance()
+                        .executeAsync(
+                                new ActivitySignUpTask(GoogleSignInService.getLastUserToken(getApplicationContext()), activityDto.get_id()),
+                                data -> {
+                                    if (data.getErrors().isEmpty()) {
+                                        DialogUtils.createAlertDialog("Signup succesful", "You've signed up for this activity.",
+                                                ActivitiesMapActivity.this).show();
+                                        //refreshActivityById("reloaded activity id");
+                                    } else {
+                                        DialogUtils.createAlertDialog("Signup Error", String.join(";", data.getErrors()),
+                                                ActivitiesMapActivity.this).show();
+                                    }
+                                });
+                close();
+            }
         }
     }
 }
