@@ -193,7 +193,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             TextView activityInfoOwner = mView.findViewById(R.id.activity_info_owner);
             TextView activityInfoSportType = mView.findViewById(R.id.activity_info_sport);
-            TextView activityInfoRemainingPlaces = mView.findViewById(R.id.activity_info_rem_places_label);
+            TextView activityInfoRemainingPlaces = mView.findViewById(R.id.activity_info_rem_places);
             TextView activityInfoStartDate = mView.findViewById(R.id.activity_info_start_date);
             ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
             activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
