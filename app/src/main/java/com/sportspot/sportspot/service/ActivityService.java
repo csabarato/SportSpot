@@ -6,9 +6,9 @@ import android.net.Uri;
 import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
 import com.sportspot.sportspot.converter.ActivityConverter;
-import com.sportspot.sportspot.dto.ActivityRequestDto;
-import com.sportspot.sportspot.dto.ActivityModel;
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.ActivityRequestModel;
+import com.sportspot.sportspot.model.ActivityModel;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
 
 import org.json.JSONException;
@@ -30,7 +30,7 @@ public class ActivityService {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String api_url = ConfigUtil.getDevProperties().getProperty(ConfigConstants.API_URL);
 
-    public static ResponseModel<String> addNewActivity(ActivityRequestDto activityReqDto, String googleIdToken) {
+    public static ResponseModel<String> addNewActivity(ActivityRequestModel activityReqModel, String googleIdToken) {
 
         ResponseModel<String> responseModel = new ResponseModel<>();
 
@@ -38,7 +38,7 @@ public class ActivityService {
                 .appendPath("activity")
                 .build();
 
-        String json = activityReqDto.toJson();
+        String json = activityReqModel.toJson();
         RequestBody requestBody = RequestBody.create(MediaTypes.JSON, json);
 
         try {

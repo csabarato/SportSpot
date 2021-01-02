@@ -1,7 +1,7 @@
 package com.sportspot.sportspot.service.tasks;
 
-import com.sportspot.sportspot.dto.ActivityModel;
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.ActivityModel;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.service.ActivityService;
 
 import java.util.List;

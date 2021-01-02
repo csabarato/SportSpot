@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.response_model;
+package com.sportspot.sportspot.model;
 
 import java.util.Collections;
 import java.util.List;

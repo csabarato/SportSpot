@@ -3,8 +3,8 @@ package com.sportspot.sportspot.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sportspot.sportspot.dto.ActivityRequestDto;
-import com.sportspot.sportspot.dto.ActivityModel;
+import com.sportspot.sportspot.model.ActivityRequestModel;
+import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.view_model.NewActivityViewModel;
 
 import java.util.List;
@@ -14,21 +14,21 @@ public class ActivityConverter {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static ActivityRequestDto convertToRequestDto(NewActivityViewModel newActivityViewModel) {
+    public static ActivityRequestModel convertToRequestModel(NewActivityViewModel newActivityViewModel) {
 
-        ActivityRequestDto requestDto = new ActivityRequestDto();
+        ActivityRequestModel activityReqModel = new ActivityRequestModel();
 
-        requestDto.setSportType(newActivityViewModel.getSportType());
-        requestDto.setLocationLat(newActivityViewModel.getLocationLat());
-        requestDto.setLocationLon(newActivityViewModel.getLocationLon());
-        requestDto.setStartDate(newActivityViewModel.getStartDate().getTimeInMillis());
-        requestDto.setNumOfPersons(newActivityViewModel.getNumOfPersons());
+        activityReqModel.setSportType(newActivityViewModel.getSportType());
+        activityReqModel.setLocationLat(newActivityViewModel.getLocationLat());
+        activityReqModel.setLocationLon(newActivityViewModel.getLocationLon());
+        activityReqModel.setStartDate(newActivityViewModel.getStartDate().getTimeInMillis());
+        activityReqModel.setNumOfPersons(newActivityViewModel.getNumOfPersons());
 
         if (newActivityViewModel.getDescription() != null && !newActivityViewModel.getDescription().isEmpty()) {
-            requestDto.setDescription(newActivityViewModel.getDescription());
+            activityReqModel.setDescription(newActivityViewModel.getDescription());
         }
 
-        return requestDto;
+        return activityReqModel;
     }
 
     public static List<ActivityModel> convertToActivityModelList(String json) {

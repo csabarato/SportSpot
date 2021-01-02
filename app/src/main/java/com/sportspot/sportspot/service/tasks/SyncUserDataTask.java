@@ -1,21 +1,21 @@
 package com.sportspot.sportspot.service.tasks;
 
-import com.sportspot.sportspot.dto.UserDataDto;
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.UserDataModel;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.service.UserDataService;
 
 
 public class SyncUserDataTask extends BaseAsyncTask<Void> {
 
-    private final UserDataDto userDataDto;
+    private final UserDataModel userDataModel;
 
-    public SyncUserDataTask(UserDataDto userDataDto, String googleIdToken) {
+    public SyncUserDataTask(UserDataModel userDataModel, String googleIdToken) {
         super(googleIdToken);
-        this.userDataDto = userDataDto;
+        this.userDataModel = userDataModel;
     }
 
     @Override
     public ResponseModel<Void> call() {
-        return UserDataService.syncUserData(userDataDto, googleIdToken);
+        return UserDataService.syncUserData(userDataModel, googleIdToken);
     }
 }

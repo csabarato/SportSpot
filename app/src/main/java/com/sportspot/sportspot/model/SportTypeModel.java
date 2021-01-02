@@ -1,6 +1,6 @@
-package com.sportspot.sportspot.dto;
+package com.sportspot.sportspot.model;
 
-public class SportTypeDto {
+public class SportTypeModel {
 
     private String _id;
     private String name;

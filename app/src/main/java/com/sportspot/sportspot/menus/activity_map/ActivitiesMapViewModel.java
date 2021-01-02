@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.dto.ActivityModel;
+import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;

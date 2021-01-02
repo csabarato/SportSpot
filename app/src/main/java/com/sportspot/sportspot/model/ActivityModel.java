@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.dto;
+package com.sportspot.sportspot.model;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
@@ -7,8 +7,8 @@ import java.util.List;
 public class ActivityModel {
 
     private String _id;
-    private UserDataDto owner;
-    private SportTypeDto sportType;
+    private UserDataModel owner;
+    private SportTypeModel sportType;
     private Double locationLatitude;
     private Double locationLongitude;
     private Long startDate;
@@ -24,19 +24,19 @@ public class ActivityModel {
         this._id = _id;
     }
 
-    public UserDataDto getOwner() {
+    public UserDataModel getOwner() {
         return owner;
     }
 
-    public void setOwner(UserDataDto owner) {
+    public void setOwner(UserDataModel owner) {
         this.owner = owner;
     }
 
-    public SportTypeDto getSportType() {
+    public SportTypeModel getSportType() {
         return sportType;
     }
 
-    public void setSportType(SportTypeDto sportType) {
+    public void setSportType(SportTypeModel sportType) {
         this.sportType = sportType;
     }
 

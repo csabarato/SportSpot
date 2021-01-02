@@ -1,9 +1,9 @@
-package com.sportspot.sportspot.dto;
+package com.sportspot.sportspot.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ActivityRequestDto {
+public class ActivityRequestModel {
 
     private String sportType;
     private Double locationLat;

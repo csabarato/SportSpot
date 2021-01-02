@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
-import com.sportspot.sportspot.dto.ActivityModel;
+import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DateUtils;

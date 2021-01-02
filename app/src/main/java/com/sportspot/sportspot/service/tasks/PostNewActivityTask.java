@@ -1,22 +1,22 @@
 package com.sportspot.sportspot.service.tasks;
 
-import com.sportspot.sportspot.dto.ActivityRequestDto;
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.ActivityRequestModel;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.service.ActivityService;
 
 
 
 public class PostNewActivityTask extends BaseAsyncTask<String> {
 
-    private final ActivityRequestDto activityReqDto;
+    private final ActivityRequestModel activityReqModel;
 
-    public PostNewActivityTask(ActivityRequestDto activityReqDto, String googleIdToken) {
+    public PostNewActivityTask(ActivityRequestModel activityReqModel, String googleIdToken) {
         super(googleIdToken);
-        this.activityReqDto = activityReqDto;
+        this.activityReqModel = activityReqModel;
     }
 
     @Override
     public ResponseModel<String> call() {
-        return ActivityService.addNewActivity(activityReqDto, googleIdToken);
+        return ActivityService.addNewActivity(activityReqModel, googleIdToken);
     }
 }

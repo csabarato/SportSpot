@@ -1,28 +1,28 @@
 package com.sportspot.sportspot.converter;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.sportspot.sportspot.dto.UserDataDto;
+import com.sportspot.sportspot.model.UserDataModel;
 
 public class UserDataConverter {
 
-    public static UserDataDto convertAccountToUserDataDto(GoogleSignInAccount account) {
+    public static UserDataModel convertAccountToUserDataModel(GoogleSignInAccount account) {
 
-        UserDataDto userDataDto = new UserDataDto();
+        UserDataModel userDataModel = new UserDataModel();
 
-        userDataDto.set_id(account.getId());
+        userDataModel.set_id(account.getId());
 
         if (account.getEmail() != null) {
-            userDataDto.setEmail(account.getEmail());
+            userDataModel.setEmail(account.getEmail());
         }
 
         if (account.getGivenName() != null) {
-            userDataDto.setFirstName(account.getGivenName());
+            userDataModel.setFirstName(account.getGivenName());
         }
 
         if (account.getFamilyName() != null) {
-            userDataDto.setLastName(account.getFamilyName());
+            userDataModel.setLastName(account.getFamilyName());
         }
 
-        return userDataDto;
+        return userDataModel;
     }
 }

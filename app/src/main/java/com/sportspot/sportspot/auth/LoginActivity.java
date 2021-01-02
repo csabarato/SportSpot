@@ -164,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
             // Sync User data with Database
             AsyncTaskRunner.getInstance().executeAsync(
                     new SyncUserDataTask(
-                            UserDataConverter.convertAccountToUserDataDto(account),
+                            UserDataConverter.convertAccountToUserDataModel(account),
                             account.getIdToken()),
                         data -> {
                             if (data.getErrors().isEmpty()) {

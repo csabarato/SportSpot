@@ -1,10 +1,10 @@
-package com.sportspot.sportspot.dto;
+package com.sportspot.sportspot.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class UserDataDto {
+public class UserDataModel {
 
     private String _id;
     private String email;

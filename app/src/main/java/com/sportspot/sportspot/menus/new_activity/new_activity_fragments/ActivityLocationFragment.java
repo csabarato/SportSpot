@@ -259,7 +259,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         showProgressDialog();
         asyncTaskRunner.executeAsync(new PostNewActivityTask(
-                ActivityConverter.convertToRequestDto(newActivityViewModel),
+                ActivityConverter.convertToRequestModel(newActivityViewModel),
                 GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
 
                     hideProgressDialog();

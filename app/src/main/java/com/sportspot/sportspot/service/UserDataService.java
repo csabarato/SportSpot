@@ -4,8 +4,8 @@ import android.net.Uri;
 
 import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
-import com.sportspot.sportspot.dto.UserDataDto;
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.UserDataModel;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class UserDataService {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String api_url = ConfigUtil.getDevProperties().getProperty(ConfigConstants.API_URL);
 
-    public static ResponseModel<Void> syncUserData(UserDataDto userDataDto, String googleIdToken) {
+    public static ResponseModel<Void> syncUserData(UserDataModel userDataModel, String googleIdToken) {
 
         ResponseModel<Void> responseModel = new ResponseModel<>();
 
@@ -31,7 +31,7 @@ public class UserDataService {
                 .appendPath("sync_user_data")
                 .build();
 
-        RequestBody body = RequestBody.create(MediaTypes.JSON, userDataDto.toJSON());
+        RequestBody body = RequestBody.create(MediaTypes.JSON, userDataModel.toJSON());
 
         try {
 

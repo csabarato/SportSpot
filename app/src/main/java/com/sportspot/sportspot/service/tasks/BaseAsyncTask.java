@@ -1,6 +1,6 @@
 package com.sportspot.sportspot.service.tasks;
 
-import com.sportspot.sportspot.response_model.ResponseModel;
+import com.sportspot.sportspot.model.ResponseModel;
 
 import java.util.concurrent.Callable;
 
