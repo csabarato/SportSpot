@@ -7,7 +7,7 @@ import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
 import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.dto.ActivityRequestDto;
-import com.sportspot.sportspot.dto.ActivityResponseDto;
+import com.sportspot.sportspot.dto.ActivityModel;
 import com.sportspot.sportspot.response_model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
 
@@ -67,9 +67,9 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<List<ActivityResponseDto>> getActivities(String googleIdToken) {
+    public static ResponseModel<List<ActivityModel>> getActivities(String googleIdToken) {
 
-        ResponseModel<List<ActivityResponseDto>> responseModel = new ResponseModel<>();
+        ResponseModel<List<ActivityModel>> responseModel = new ResponseModel<>();
 
         Uri builtUri = Uri.parse(api_url).buildUpon()
                 .appendPath("activities")
@@ -87,8 +87,8 @@ public class ActivityService {
 
             if (response.code() == HttpURLConnection.HTTP_OK) {
 
-                List<ActivityResponseDto> activityDtoList = ActivityConverter.convertToResponseDtoList(response.body().string());
-                responseModel.setData(activityDtoList);
+                List<ActivityModel> activities = ActivityConverter.convertToActivityModelList(response.body().string());
+                responseModel.setData(activities);
             } else {
                 responseModel.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
             }
@@ -101,9 +101,9 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<Void> activitySignUp(String googleIdToken, String activityId) {
+    public static ResponseModel<ActivityModel> activitySignUp(String googleIdToken, String activityId) {
 
-        ResponseModel<Void> responseModel = new ResponseModel<>();
+        ResponseModel<ActivityModel> responseModel = new ResponseModel<>();
 
         Uri builtUri = Uri.parse(api_url).buildUpon()
                     .appendPath("activity")
@@ -127,7 +127,7 @@ public class ActivityService {
             Response response = client.newCall(request).execute();
 
             if (response.code() == HttpURLConnection.HTTP_OK) {
-                return responseModel;
+                responseModel.setData(ActivityConverter.convertToActivityModel(response.body().string()));
             } else {
                 responseModel.setErrors(Arrays.asList("Error: "+ (response.code()),response.message(), response.body().string()));
             }

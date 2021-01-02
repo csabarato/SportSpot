@@ -3,6 +3,7 @@ package com.sportspot.sportspot.menus.activity_map;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -14,12 +15,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
-import com.sportspot.sportspot.dto.ActivityResponseDto;
-import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
-import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
-import com.sportspot.sportspot.shared.AsyncTaskRunner;
+import com.sportspot.sportspot.dto.ActivityModel;
+import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.DialogUtils;
@@ -43,16 +43,14 @@ import java.util.List;
 public class ActivitiesMapActivity extends AppCompatActivity {
 
     private MapView map = null;
-    private AsyncTaskRunner asyncTaskRunner;
-    private Button activitySignUpButton;
-
+    private ActivitiesMapViewModel activitiesMapViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities_map);
 
-        asyncTaskRunner = new AsyncTaskRunner();
+        activitiesMapViewModel = ViewModelProviders.of(this).get(ActivitiesMapViewModel.class);
 
         // Load and initialize the osmdroid configuration
         Context ctx = getApplicationContext();
@@ -81,20 +79,13 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         }
 
         loadActivities();
+
+        activitiesMapViewModel.getActivities().observe(this, this::showActivityMarkers);
+        activitiesMapViewModel.getAlertDetailsLiveData().observe(this, this::showAlertDialog);
     }
 
     private void loadActivities() {
-        asyncTaskRunner.executeAsync(new GetActivitiesTask(GoogleSignInService.getLastUserToken(this)),
-                (data) -> {
-
-                    if (data.getErrors().isEmpty() && data.getData() != null) {
-                        showActivityMarkers(data.getData());
-                    } else {
-                        DialogUtils.createAlertDialog(
-                                getString(R.string.activities_load_error), String.join(";", data.getErrors()), ActivitiesMapActivity.this).show();
-                    }
-        });
-
+            activitiesMapViewModel.loadActivities(GoogleSignInService.getLastUserToken(this));
     }
 
     private void setToolbar() {
@@ -132,22 +123,26 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         map.getOverlays().add(mCompassOverlay);
     }
 
-    private void showActivityMarkers(List<ActivityResponseDto> activityDtos) {
+    private void showActivityMarkers(List<ActivityModel> activities) {
 
-        for (ActivityResponseDto dto : activityDtos) {
+        for (ActivityModel activity : activities) {
             Marker activityMarker = new Marker(map);
-            activityMarker.setId(dto.get_id());
+            activityMarker.setId(activity.get_id());
 
-            activityMarker.setPosition(new GeoPoint(dto.getLocationLatitude(), dto.getLocationLongitude()));
+            activityMarker.setPosition(new GeoPoint(activity.getLocationLatitude(), activity.getLocationLongitude()));
             activityMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
             activityMarker.setTitle(activityMarker.getId());
 
-            InfoWindow activityInfoWindow = new ActivityInfoWindow(R.layout.activity_info_window, map, dto);
+            InfoWindow activityInfoWindow = new ActivityInfoWindow(R.layout.activity_info_window, map, activity);
             activityMarker.setInfoWindow(activityInfoWindow);
 
             Drawable activityLocationIcon;
-            if (GoogleSignInService.isIdEqualsCurrentUserId(getApplicationContext(), dto.getOwner().get_id())) {
+
+            // Set Marker icon
+            if (activity.isUserOwner(GoogleSignIn.getLastSignedInAccount(this))) {
                 activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_my_activity_location);
+            } else if (activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(this))) {
+                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_signed_up_activity_location);
             } else {
                 activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
             }
@@ -177,19 +172,20 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         }
     }
 
-    public void refreshActivityById(String activityId) {
-        // Load refreshed activty and then reload map.
-
+    private void showAlertDialog(AlertDialogDetails alertDialogDetails) {
+            DialogUtils.createAlertDialog(
+                alertDialogDetails.getTitle(), alertDialogDetails.getMessage(), ActivitiesMapActivity.this).show();
     }
 
     // Nested class for Activity info window
     private class ActivityInfoWindow extends InfoWindow implements View.OnClickListener {
 
-        private final ActivityResponseDto activityDto;
+        private final ActivityModel activity;
+        private Button activitySignUpButton;
 
-        public ActivityInfoWindow(int layoutResId, MapView mapView, ActivityResponseDto activityDto) {
+        public ActivityInfoWindow(int layoutResId, MapView mapView, ActivityModel activity) {
             super(layoutResId, mapView);
-            this.activityDto = activityDto;
+            this.activity = activity;
         }
 
         @Override
@@ -197,7 +193,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             TextView activityInfoOwner = mView.findViewById(R.id.activity_info_owner);
             TextView activityInfoSportType = mView.findViewById(R.id.activity_info_sport);
-            TextView activityInfoNoP = mView.findViewById(R.id.activity_info_nop);
+            TextView activityInfoRemainingPlaces = mView.findViewById(R.id.activity_info_rem_places_label);
             TextView activityInfoStartDate = mView.findViewById(R.id.activity_info_start_date);
             ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
             activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
@@ -205,20 +201,22 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             TextView activityInfoDescLabel = mView.findViewById(R.id.activity_info_desc_label);
             TextView activityInfoDesc = mView.findViewById(R.id.activity_info_desc);
 
-            if (GoogleSignInService.isIdEqualsCurrentUserId(mView.getContext(), activityDto.getOwner().get_id())) {
+            if (GoogleSignInService.isIdEqualsCurrentUserId(mView.getContext(), activity.getOwner().get_id())) {
                 activityInfoOwner.setText(R.string.info_window_owner_me);
-            } else {
+            } else if (!activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(ActivitiesMapActivity.this))) {
                 activitySignUpButton.setVisibility(View.VISIBLE);
-                activityInfoOwner.setText(activityDto.getOwner().getDisplayName());
+                activityInfoOwner.setText(activity.getOwner().getDisplayName());
+            } else {
+                activityInfoOwner.setText(activity.getOwner().getDisplayName());
             }
 
-            activityInfoSportType.setText(activityDto.getSportType().getName());
-            activityInfoNoP.setText(Integer.toString(activityDto.getNumOfPersons() - activityDto.getSignedUpUsers().size()));
-            activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activityDto.getStartDate())));
+            activityInfoSportType.setText(activity.getSportType().getName());
+            activityInfoRemainingPlaces.setText(Integer.toString(activity.getNumOfPersons() - activity.getSignedUpUsers().size()));
+            activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activity.getStartDate())));
 
-            if (activityDto.getDescription() != null && !activityDto.getDescription().isEmpty()) {
+            if (activity.getDescription() != null && !activity.getDescription().isEmpty()) {
                 activityInfoDescLabel.setVisibility(View.VISIBLE);
-                activityInfoDesc.setText(activityDto.getDescription());
+                activityInfoDesc.setText(activity.getDescription());
             }
 
             infoCloseButton.setOnClickListener(onClick -> this.close());
@@ -233,19 +231,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (v.equals(activitySignUpButton)) {
-                AsyncTaskRunner.getInstance()
-                        .executeAsync(
-                                new ActivitySignUpTask(GoogleSignInService.getLastUserToken(getApplicationContext()), activityDto.get_id()),
-                                data -> {
-                                    if (data.getErrors().isEmpty()) {
-                                        DialogUtils.createAlertDialog("Signup succesful", "You've signed up for this activity.",
-                                                ActivitiesMapActivity.this).show();
-                                        //refreshActivityById("reloaded activity id");
-                                    } else {
-                                        DialogUtils.createAlertDialog("Signup Error", String.join(";", data.getErrors()),
-                                                ActivitiesMapActivity.this).show();
-                                    }
-                                });
+                activitiesMapViewModel.signUpToActivity(GoogleSignInService.getLastUserToken(ActivitiesMapActivity.this),
+                        activity.get_id());
                 close();
             }
         }

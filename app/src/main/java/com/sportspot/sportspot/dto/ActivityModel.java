@@ -1,8 +1,10 @@
 package com.sportspot.sportspot.dto;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import java.util.List;
 
-public class ActivityResponseDto {
+public class ActivityModel {
 
     private String _id;
     private UserDataDto owner;
@@ -84,5 +86,13 @@ public class ActivityResponseDto {
 
     public void setSignedUpUsers(List<String> signedUpUsers) {
         this.signedUpUsers = signedUpUsers;
+    }
+
+    public boolean isUserSignedUp(GoogleSignInAccount account) {
+        return signedUpUsers.contains(account.getId());
+    }
+
+    public boolean isUserOwner(GoogleSignInAccount account) {
+        return owner.get_id().equals(account.getId());
     }
 }
