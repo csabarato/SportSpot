@@ -86,7 +86,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     }
 
     private void loadActivities() {
-            activitiesMapViewModel.loadActivities(GoogleSignInService.getLastUserToken(this));
+            activitiesMapViewModel.loadActivities();
     }
 
     private void setToolbar() {
@@ -232,8 +232,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (v.equals(activitySignUpButton)) {
-                activitiesMapViewModel.signUpToActivity(GoogleSignInService.getLastUserToken(ActivitiesMapActivity.this),
-                        activity.get_id());
+                activitiesMapViewModel.signUpToActivity(activity.get_id());
                 close();
             }
         }

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
@@ -34,8 +35,9 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
         return alertDetailsLiveData;
     }
 
-    public void loadActivities(String googleIdToken) {
-        asyncTaskRunner.executeAsync(new GetActivitiesTask(googleIdToken),
+    public void loadActivities() {
+        asyncTaskRunner.executeAsync(
+                new GetActivitiesTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext())),
                 (data) -> {
 
                     if (data.getErrors().isEmpty() && data.getData() != null) {
@@ -50,12 +52,12 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
                 });
     }
 
-    public void signUpToActivity(String googleIdToken, String activityId) {
+    public void signUpToActivity(String activityId) {
         AlertDialogDetails alertDialogDetails = new AlertDialogDetails();
 
         AsyncTaskRunner.getInstance()
                 .executeAsync(
-                        new ActivitySignUpTask(googleIdToken, activityId),
+                        new ActivitySignUpTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext()),activityId),
                         data -> {
                             if (data.getErrors().isEmpty()) {
                                 this.updateActivity(data.getData());
