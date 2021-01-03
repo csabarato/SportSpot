@@ -1,4 +1,4 @@
-package com.sportspot.sportspot.menus.activity_map;
+package com.sportspot.sportspot.view_model;
 
 import android.app.Application;
 

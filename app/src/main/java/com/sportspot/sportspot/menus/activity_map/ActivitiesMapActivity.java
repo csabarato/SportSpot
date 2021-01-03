@@ -23,6 +23,7 @@ import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.DialogUtils;
+import com.sportspot.sportspot.view_model.ActivitiesMapViewModel;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;

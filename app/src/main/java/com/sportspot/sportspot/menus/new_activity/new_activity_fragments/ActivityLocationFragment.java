@@ -23,11 +23,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.SharedPrefConst;
-import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
-import com.sportspot.sportspot.service.tasks.PostNewActivityTask;
 import com.sportspot.sportspot.shared.LocationProvider;
 import com.sportspot.sportspot.shared.AlertDialogFragment;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
@@ -102,6 +99,18 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
         newActivityViewModel = ViewModelProviders.of(getActivity()).get(NewActivityViewModel.class);
         restoreDataFromViewModel();
+
+        newActivityViewModel.getAlertDetailsLiveData().observe(getViewLifecycleOwner(),
+                alertDialogDetails -> showAlertDialog(alertDialogDetails.getTitle(), alertDialogDetails.getMessage()));
+
+        newActivityViewModel.isSubmitPending().observe(getViewLifecycleOwner(),
+                (isSubmitPending) -> {
+                    if (isSubmitPending) {
+                        showProgressDialog();
+                    } else hideProgressDialog();
+                });
+
+        newActivityViewModel.isSubmitted().observe(getViewLifecycleOwner(), isSubmitted -> waitAndNavigateToMainMenu());
 
         progressDialog = new ProgressDialog(getActivity());
 
@@ -256,20 +265,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     }
 
     private void submitNewActivity() {
-
-        showProgressDialog();
-        asyncTaskRunner.executeAsync(new PostNewActivityTask(
-                ActivityConverter.convertToRequestModel(newActivityViewModel),
-                GoogleSignInService.getLastUserToken(getActivity().getApplicationContext())), (data) -> {
-
-                    hideProgressDialog();
-                    if (!data.getErrors().isEmpty()) {
-                        showAlertDialog("Http Request Error", String.join("; ", data.getErrors()));
-                    } else {
-                        showAlertDialog("Activity saved successfully!", "");
-                        waitAndNavigateToMainMenu();
-                    }
-        });
+        newActivityViewModel.submitNewActivity();
     }
 
     private void centerMapOnMyLocation() {
