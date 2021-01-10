@@ -21,6 +21,9 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<ActivityModel>> activities = new MutableLiveData<>();
     private MutableLiveData<AlertDialogDetails> alertDetailsLiveData = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isActivitiesLoading = new MutableLiveData<>(false);
+    private MutableLiveData<Boolean> isSignupPending = new MutableLiveData<>(false);
+
     private AsyncTaskRunner asyncTaskRunner = AsyncTaskRunner.getInstance();
 
     public ActivitiesMapViewModel(@NonNull Application application) {
@@ -36,6 +39,7 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
     }
 
     public void loadActivities() {
+        isActivitiesLoading.setValue(true);
         asyncTaskRunner.executeAsync(
                 new GetActivitiesTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext())),
                 (data) -> {
@@ -49,12 +53,13 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
 
                         alertDetailsLiveData.setValue(alertDetails);
                     }
+                    isActivitiesLoading.setValue(false);
                 });
     }
 
     public void signUpToActivity(String activityId) {
+        isSignupPending.setValue(true);
         AlertDialogDetails alertDialogDetails = new AlertDialogDetails();
-
         AsyncTaskRunner.getInstance()
                 .executeAsync(
                         new ActivitySignUpTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext()),activityId),
@@ -70,6 +75,7 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
                                 alertDialogDetails.setMessage(String.join(";", data.getErrors()));
                                 alertDetailsLiveData.setValue(alertDialogDetails);
                             }
+                            isSignupPending.setValue(false);
                         });
     }
 
@@ -85,5 +91,13 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
             activityModels.set(activityModels.indexOf(oldActivity.get()), updatedActivity);
             activities.setValue(activityModels);
         }
+    }
+
+    public MutableLiveData<Boolean> isActivitiesLoading() {
+        return isActivitiesLoading;
+    }
+
+    public MutableLiveData<Boolean> isSignupPending() {
+        return isSignupPending;
     }
 }

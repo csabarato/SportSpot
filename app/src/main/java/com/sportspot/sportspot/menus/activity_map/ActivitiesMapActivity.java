@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -83,6 +84,22 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
         activitiesMapViewModel.getActivities().observe(this, this::showActivityMarkers);
         activitiesMapViewModel.getAlertDetailsLiveData().observe(this, this::showAlertDialog);
+
+
+        ProgressDialog activitiesLoadingPD = createProgressDialog("Loading activities");
+        activitiesMapViewModel.isActivitiesLoading().observe(this, (isLoading) -> {
+            if (isLoading) activitiesLoadingPD.show();
+            else {
+                activitiesLoadingPD.dismiss();
+            }
+        });
+
+        ProgressDialog signupPendingDP = createProgressDialog("Signing up to activity");
+        activitiesMapViewModel.isSignupPending().observe(this, (isPending) -> {
+            if (isPending) signupPendingDP.show();
+            else signupPendingDP.dismiss();
+        });
+
     }
 
     private void loadActivities() {
@@ -176,6 +193,14 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     private void showAlertDialog(AlertDialogDetails alertDialogDetails) {
             DialogUtils.createAlertDialog(
                 alertDialogDetails.getTitle(), alertDialogDetails.getMessage(), ActivitiesMapActivity.this).show();
+    }
+
+    private ProgressDialog createProgressDialog(String message) {
+        ProgressDialog progressDialog  = new ProgressDialog(ActivitiesMapActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage(message);
+        return progressDialog;
     }
 
     // Nested class for Activity info window
