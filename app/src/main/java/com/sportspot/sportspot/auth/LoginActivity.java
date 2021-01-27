@@ -27,6 +27,7 @@ import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.converter.UserDataConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
+import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.service.tasks.SyncUserDataTask;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.utils.DialogUtils;
@@ -128,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == GoogleSignInService.GOOGLE__SIGN_IN_RC) {
+        if (requestCode == GoogleSignInService.GOOGLE_SIGN_IN_RC) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleGoolgeSignInResult(task);
         }
@@ -137,19 +138,38 @@ public class LoginActivity extends AppCompatActivity {
     private void doGoogleSilentSignIn(GoogleSignInService googleSignInService) {
         Task<GoogleSignInAccount> task = googleSignInService.getGoogleSignInClient(getApplicationContext()).silentSignIn();
 
+        progressBar.setVisibility(View.VISIBLE);
         // If there's immediate result already
         if (task.isSuccessful()) {
-            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+
+            syncUserData(task.getResult(),
+                    data -> {
+                        progressBar.setVisibility(View.GONE);
+                        if (data.getErrors().isEmpty()) {
+                            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                        } else {
+                            DialogUtils.createAlertDialog(
+                                    getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
+                        }
+                    });
         } else {
-            progressBar.setVisibility(View.VISIBLE);
             task.addOnCompleteListener(signInTask -> {
 
                 try {
                     signInTask.getResult(ApiException.class);
-                    progressBar.setVisibility(View.GONE);
-                    startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                    syncUserData(signInTask.getResult(),
+                            data -> {
+                                progressBar.setVisibility(View.GONE);
+                                if (data.getErrors().isEmpty()) {
+                                    startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                                } else {
+                                    DialogUtils.createAlertDialog(
+                                            getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
+                                }
+                            });
 
                 } catch (ApiException apiException) {
+                    progressBar.setVisibility(View.GONE);
                     DialogUtils.createAlertDialog("Google Sign In error", apiException.getMessage(), LoginActivity.this);
                 }
             });
@@ -158,28 +178,36 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleGoolgeSignInResult(Task<GoogleSignInAccount> task) {
 
+        progressBar.setVisibility(View.VISIBLE);
         try{
             GoogleSignInAccount account = task.getResult(ApiException.class);
-
             // Sync User data with Database
-            AsyncTaskRunner.getInstance().executeAsync(
-                    new SyncUserDataTask(
-                            UserDataConverter.convertAccountToUserDataModel(account),
-                            account.getIdToken()),
-                        data -> {
-                            if (data.getErrors().isEmpty()) {
-                                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
-                            } else {
-                                DialogUtils.createAlertDialog(
-                                        getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
-                            }
+            syncUserData(account,
+                    data -> {
+                        progressBar.setVisibility(View.GONE);
+                        if (data.getErrors().isEmpty()) {
+                            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                        } else {
+                            DialogUtils.createAlertDialog(
+                                    getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
+                        }
                     });
 
         } catch (ApiException e) {
+            progressBar.setVisibility(View.GONE);
             e.printStackTrace();
             Log.d("Google error", e.getMessage());
             DialogUtils.createAlertDialog(getString(R.string.google_signin_error), task.getException().getMessage(), LoginActivity.this).show();
         }
+    }
+
+    private void syncUserData(GoogleSignInAccount account, AsyncTaskRunner.Callback<ResponseModel<Void>> callback) {
+        // Sync User data with Database
+        AsyncTaskRunner.getInstance().executeAsync(
+
+                new SyncUserDataTask(
+                        UserDataConverter.convertAccountToUserDataModel(account),
+                        account.getIdToken()), callback);
     }
 
     public void navigateToRegisterActivity(View view) {

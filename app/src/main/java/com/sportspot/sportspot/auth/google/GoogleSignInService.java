@@ -17,7 +17,7 @@ public class GoogleSignInService implements View.OnClickListener {
     private static GoogleSignInOptions gso = null;
 
     // Request codes
-    public static final Integer GOOGLE__SIGN_IN_RC = 1;
+    public static final Integer GOOGLE_SIGN_IN_RC = 1;
 
     public GoogleSignInService(Context context, Activity activity) {
         googleSignInClient = getGoogleSignInClient(context);
@@ -47,7 +47,7 @@ public class GoogleSignInService implements View.OnClickListener {
 
     private void handleGoogleSignIn() {
         Intent googleSignInIntent = googleSignInClient.getSignInIntent();
-        activity.startActivityForResult(googleSignInIntent, GOOGLE__SIGN_IN_RC);
+        activity.startActivityForResult(googleSignInIntent, GOOGLE_SIGN_IN_RC);
     }
 
     public static String getLastUserToken(Context context) {
