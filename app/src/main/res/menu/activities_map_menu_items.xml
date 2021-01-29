@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/filter_activities"
+        android:title="@string/filter_activities_menu"
+        android:icon="@drawable/ic_filter"
+        app:showAsAction="always"
+        >
+        <menu>
+            <group android:id="@+id/filter_activities_group" android:checkableBehavior="single">
+                <item android:id="@+id/all_activities" android:title="@string/filter_all_activities" />
+                <item android:id="@+id/my_activities" android:title="@string/filter_my_activities" />
+                <item android:id="@+id/signed_up_activities" android:title="@string/filter_signed_up_activities" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

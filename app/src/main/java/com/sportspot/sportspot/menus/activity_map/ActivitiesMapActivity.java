@@ -1,5 +1,6 @@
 package com.sportspot.sportspot.menus.activity_map;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -11,6 +12,8 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
+import com.sportspot.sportspot.constants.ActivityFilter;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
@@ -34,6 +38,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
@@ -80,7 +85,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
 
-        loadActivities();
+        loadActivities(null);
 
         activitiesMapViewModel.getActivities().observe(this, this::showActivityMarkers);
         activitiesMapViewModel.getAlertDetailsLiveData().observe(this, this::showAlertDialog);
@@ -102,8 +107,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
     }
 
-    private void loadActivities() {
-            activitiesMapViewModel.loadActivities();
+    private void loadActivities(ActivityFilter activityFilter) {
+            activitiesMapViewModel.loadActivities(activityFilter);
     }
 
     private void setToolbar() {
@@ -115,6 +120,29 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.activities_map_menu_items, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        item.setChecked(true);
+
+        if (item.getItemId() == R.id.all_activities) {
+            loadActivities(null);
+        } else if (item.getItemId() == R.id.my_activities) {
+            loadActivities(ActivityFilter.MY_ACTIVITIES);
+        } else if (item.getItemId() == R.id.signed_up_activities) {
+            loadActivities(ActivityFilter.SIGNED_UP_ACTIVITIES);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -142,6 +170,17 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     }
 
     private void showActivityMarkers(List<ActivityModel> activities) {
+
+        // Remove not showing markers
+        // TODO: outsource this!
+        for (Overlay overlay : map.getOverlays()) {
+            if (overlay instanceof Marker &&
+                    activities.stream().noneMatch(activity -> activity.get_id().equals(((Marker) overlay).getId()))) {
+                map.getOverlays().remove(overlay);
+            }
+        }
+
+        // TODO: refresh already added markers, but do not duplicate any of them!
 
         for (ActivityModel activity : activities) {
             Marker activityMarker = new Marker(map);

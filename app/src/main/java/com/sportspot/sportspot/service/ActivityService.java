@@ -3,6 +3,7 @@ package com.sportspot.sportspot.service;
 import android.net.Uri;
 
 
+import com.sportspot.sportspot.constants.ActivityFilter;
 import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
 import com.sportspot.sportspot.converter.ActivityConverter;
@@ -67,18 +68,21 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<List<ActivityModel>> getActivities(String googleIdToken) {
+    public static ResponseModel<List<ActivityModel>> getActivities(String googleIdToken, ActivityFilter activityFilter) {
 
         ResponseModel<List<ActivityModel>> responseModel = new ResponseModel<>();
 
-        Uri builtUri = Uri.parse(api_url).buildUpon()
-                .appendPath("activities")
-                .build();
+        Uri.Builder uriBuilder = Uri.parse(api_url).buildUpon()
+                .appendPath("activities");
+
+        if (activityFilter != null) {
+            uriBuilder.appendQueryParameter("q", activityFilter.getFilterValue());
+        }
 
         try {
 
             Request request = new Request.Builder()
-                    .url(builtUri.toString())
+                    .url(uriBuilder.build().toString())
                     .addHeader("Authorization", "Bearer "+ googleIdToken)
                     .get()
                     .build();
