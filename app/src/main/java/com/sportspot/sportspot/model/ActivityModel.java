@@ -13,6 +13,7 @@ public class ActivityModel {
     private Double locationLongitude;
     private Long startDate;
     private Integer numOfPersons;
+    private Integer remainingPlaces;
     private String description;
     private List<String> signedUpUsers;
 
@@ -70,6 +71,14 @@ public class ActivityModel {
 
     public void setNumOfPersons(Integer numOfPersons) {
         this.numOfPersons = numOfPersons;
+    }
+
+    public Integer getRemainingPlaces() {
+        return remainingPlaces;
+    }
+
+    public void setRemainingPlaces(Integer remainingPlaces) {
+        this.remainingPlaces = remainingPlaces;
     }
 
     public String getDescription() {

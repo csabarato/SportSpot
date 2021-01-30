@@ -284,7 +284,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             TextView activityInfoOwner = mView.findViewById(R.id.activity_info_owner);
             TextView activityInfoSportType = mView.findViewById(R.id.activity_info_sport);
-            TextView activityInfoRemainingPlaces = mView.findViewById(R.id.activity_info_rem_places);
+            TextView activityInfoPlaces = mView.findViewById(R.id.activity_info_places);
             TextView activityInfoStartDate = mView.findViewById(R.id.activity_info_start_date);
             ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
             activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
@@ -302,7 +302,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             }
 
             activityInfoSportType.setText(activity.getSportType().getName());
-            activityInfoRemainingPlaces.setText(Integer.toString(activity.getNumOfPersons() - activity.getSignedUpUsers().size()));
+            activityInfoPlaces.setText((activity.getRemainingPlaces()) + " / "+ (activity.getNumOfPersons()));
             activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activity.getStartDate())));
 
             if (activity.getDescription() != null && !activity.getDescription().isEmpty()) {
