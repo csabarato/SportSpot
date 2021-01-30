@@ -47,6 +47,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 public class ActivitiesMapActivity extends AppCompatActivity {
 
     private MapView map = null;
@@ -172,17 +174,38 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     private void showActivityMarkers(List<ActivityModel> activities) {
 
         // Remove not showing markers
-        // TODO: outsource this!
         for (Overlay overlay : map.getOverlays()) {
             if (overlay instanceof Marker &&
-                    activities.stream().noneMatch(activity -> activity.get_id().equals(((Marker) overlay).getId()))) {
-                map.getOverlays().remove(overlay);
-            }
+                activities.stream().noneMatch(activity -> activity.get_id().equals(((Marker) overlay).getId()))) {
+                    map.getOverlays().remove(overlay);
+                }
         }
 
-        // TODO: refresh already added markers, but do not duplicate any of them!
-
         for (ActivityModel activity : activities) {
+
+            Optional<Overlay> activityMarkerOpt = map.getOverlays().stream()
+                    .filter(overlay -> overlay instanceof Marker)
+                    .filter(overlay -> ((Marker) overlay).getId().equals(activity.get_id()))
+                    .findFirst();
+
+            if (activityMarkerOpt.isPresent()) {
+                Marker activityMarker = (Marker) activityMarkerOpt.get();
+                refreshActivityMarker(activityMarker, activity);
+            } else {
+                addActivityMarker(activity);
+            }
+        }
+    }
+
+    private void refreshActivityMarker(Marker activityMarker, ActivityModel activity) {
+
+        activityMarker.setPosition(new GeoPoint(activity.getLocationLatitude(), activity.getLocationLongitude()));
+        InfoWindow activityInfoWindow = new ActivityInfoWindow(R.layout.activity_info_window, map, activity);
+        activityMarker.setInfoWindow(activityInfoWindow);
+        setActivityMarkerIcon(activityMarker, activity);
+    }
+
+    private void addActivityMarker(ActivityModel activity) {
             Marker activityMarker = new Marker(map);
             activityMarker.setId(activity.get_id());
 
@@ -192,18 +215,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             InfoWindow activityInfoWindow = new ActivityInfoWindow(R.layout.activity_info_window, map, activity);
             activityMarker.setInfoWindow(activityInfoWindow);
+            setActivityMarkerIcon(activityMarker, activity);
 
-            Drawable activityLocationIcon;
-
-            // Set Marker icon
-            if (activity.isUserOwner(GoogleSignIn.getLastSignedInAccount(this))) {
-                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_my_activity_location);
-            } else if (activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(this))) {
-                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_signed_up_activity_location);
-            } else {
-                activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
-            }
-            activityMarker.setIcon(activityLocationIcon);
 
             activityMarker.setOnMarkerClickListener((marker, mapView) -> {
 
@@ -226,7 +239,20 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 return true;
             });
             map.getOverlays().add(activityMarker);
+    }
+
+    private void setActivityMarkerIcon(Marker activityMarker, ActivityModel activity) {
+        Drawable activityLocationIcon;
+        // Set Marker icon
+        if (activity.isUserOwner(GoogleSignIn.getLastSignedInAccount(this))) {
+            activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_my_activity_location);
+        } else if (activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(this))) {
+            activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_signed_up_activity_location);
+        } else {
+            activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
         }
+        activityMarker.setIcon(activityLocationIcon);
+
     }
 
     private void showAlertDialog(AlertDialogDetails alertDialogDetails) {
