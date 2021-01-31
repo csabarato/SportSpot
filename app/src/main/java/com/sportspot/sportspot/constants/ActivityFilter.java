@@ -3,7 +3,8 @@ package com.sportspot.sportspot.constants;
 public enum ActivityFilter {
 
     MY_ACTIVITIES("my"),
-    SIGNED_UP_ACTIVITIES("signedUp");
+    SIGNED_UP_ACTIVITIES("signedUp"),
+    OPEN_ACTIVITIES("open");
 
     private String filterValue;
 

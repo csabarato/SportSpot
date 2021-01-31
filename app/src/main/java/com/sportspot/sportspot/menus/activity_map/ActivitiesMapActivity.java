@@ -142,6 +142,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             loadActivities(ActivityFilter.MY_ACTIVITIES);
         } else if (item.getItemId() == R.id.signed_up_activities) {
             loadActivities(ActivityFilter.SIGNED_UP_ACTIVITIES);
+        } else if (item.getItemId() == R.id.open_activities) {
+            loadActivities(ActivityFilter.OPEN_ACTIVITIES);
         }
 
         return super.onOptionsItemSelected(item);
