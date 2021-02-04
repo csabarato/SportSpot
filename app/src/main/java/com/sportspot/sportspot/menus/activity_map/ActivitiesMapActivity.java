@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.ActivityFilter;
+import com.sportspot.sportspot.constants.SharedPrefConst;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
@@ -53,11 +55,14 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
     private MapView map = null;
     private ActivitiesMapViewModel activitiesMapViewModel;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activities_map);
+
+        sharedPreferences = this.getSharedPreferences(SharedPrefConst.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         activitiesMapViewModel = ViewModelProviders.of(this).get(ActivitiesMapViewModel.class);
 
@@ -87,7 +92,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
 
-        loadActivities(null);
+        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
+        loadActivities(ActivityFilter.getActivityFilterByValue(selectedFilterType));
 
         activitiesMapViewModel.getActivities().observe(this, this::showActivityMarkers);
         activitiesMapViewModel.getAlertDetailsLiveData().observe(this, this::showAlertDialog);
@@ -132,21 +138,48 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
+        ActivityFilter selectedFilter = ActivityFilter.getActivityFilterByValue(selectedFilterType);
+
+        switch (selectedFilter) {
+            case MY_ACTIVITIES: menu.findItem(R.id.my_activities).setChecked(true);
+            break;
+            case OPEN_ACTIVITIES: menu.findItem(R.id.open_activities).setChecked(true);
+            break;
+            case SIGNED_UP_ACTIVITIES: menu.findItem(R.id.signed_up_activities).setChecked(true);
+            break;
+            case ALL_ACTIVITIES: menu.findItem(R.id.all_activities).setChecked(true);
+            break;
+            }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
+        if (item.getItemId() == R.id.all_activities && !item.isChecked()) {
+            loadActivities(null);
+            saveSelectedFilterToSharedPref(ActivityFilter.ALL_ACTIVITIES);
+        } else if (item.getItemId() == R.id.my_activities && !item.isChecked()) {
+            loadActivities(ActivityFilter.MY_ACTIVITIES);
+            saveSelectedFilterToSharedPref(ActivityFilter.MY_ACTIVITIES);
+        } else if (item.getItemId() == R.id.signed_up_activities && !item.isChecked()) {
+            loadActivities(ActivityFilter.SIGNED_UP_ACTIVITIES);
+            saveSelectedFilterToSharedPref(ActivityFilter.SIGNED_UP_ACTIVITIES);
+        } else if (item.getItemId() == R.id.open_activities && !item.isChecked()) {
+            loadActivities(ActivityFilter.OPEN_ACTIVITIES);
+            saveSelectedFilterToSharedPref(ActivityFilter.OPEN_ACTIVITIES);
+        }
         item.setChecked(true);
 
-        if (item.getItemId() == R.id.all_activities) {
-            loadActivities(null);
-        } else if (item.getItemId() == R.id.my_activities) {
-            loadActivities(ActivityFilter.MY_ACTIVITIES);
-        } else if (item.getItemId() == R.id.signed_up_activities) {
-            loadActivities(ActivityFilter.SIGNED_UP_ACTIVITIES);
-        } else if (item.getItemId() == R.id.open_activities) {
-            loadActivities(ActivityFilter.OPEN_ACTIVITIES);
-        }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveSelectedFilterToSharedPref(ActivityFilter activityFilter) {
+        sharedPreferences.edit().putString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, activityFilter.getFilterValue()).apply();
     }
 
     @Override

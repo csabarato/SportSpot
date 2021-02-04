@@ -75,7 +75,7 @@ public class ActivityService {
         Uri.Builder uriBuilder = Uri.parse(api_url).buildUpon()
                 .appendPath("activities");
 
-        if (activityFilter != null) {
+        if (activityFilter != null && activityFilter != ActivityFilter.ALL_ACTIVITIES) {
             uriBuilder.appendQueryParameter("q", activityFilter.getFilterValue());
         }
 
