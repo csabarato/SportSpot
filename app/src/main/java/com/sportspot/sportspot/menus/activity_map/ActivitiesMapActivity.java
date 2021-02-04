@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.ActivityFilter;
@@ -172,6 +174,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.open_activities && !item.isChecked()) {
             loadActivities(ActivityFilter.OPEN_ACTIVITIES);
             saveSelectedFilterToSharedPref(ActivityFilter.OPEN_ACTIVITIES);
+        } else if (item.getItemId() == R.id.map_legend) {
+            showLegendDialog();
         }
         item.setChecked(true);
 
@@ -284,7 +288,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         } else if (activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(this))) {
             activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_signed_up_activity_location);
         } else {
-            activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_activity_location);
+            activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_open_activity_location);
         }
         activityMarker.setIcon(activityLocationIcon);
 
@@ -361,5 +365,15 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 close();
             }
         }
+    }
+
+    private void showLegendDialog() {
+
+        MaterialAlertDialogBuilder legendDialog = DialogUtils.getDefaultAlertDialogBuilder("Legend", null, ActivitiesMapActivity.this);
+        LayoutInflater layoutInflater = LayoutInflater.from(ActivitiesMapActivity.this);
+        final View view = layoutInflater.inflate(R.layout.activities_map_legend, null);
+        legendDialog.setView(view);
+        legendDialog.show();
+
     }
 }

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/signed_up_activity_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="36dp"
+        android:src="@drawable/ic_signed_up_activity_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:text="@string/filter_signed_up_activities"
+        app:layout_constraintBottom_toBottomOf="@+id/signed_up_activity_image"
+        app:layout_constraintStart_toEndOf="@+id/signed_up_activity_image"
+        app:layout_constraintTop_toTopOf="@+id/signed_up_activity_image">
+
+    </TextView>
+
+    <ImageView
+        android:id="@+id/my_activity_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@id/signed_up_activity_image"
+        android:src="@drawable/ic_my_activity_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signed_up_activity_image" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:text="@string/filter_my_activities"
+        app:layout_constraintBottom_toBottomOf="@+id/my_activity_image"
+        app:layout_constraintStart_toEndOf="@+id/my_activity_image"
+        app:layout_constraintTop_toTopOf="@+id/my_activity_image">
+
+    </TextView>
+
+    <ImageView
+        android:id="@+id/open_activity_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/my_activity_image"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_open_activity_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_activity_image" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:text="@string/filter_open_activities"
+        app:layout_constraintBottom_toBottomOf="@+id/open_activity_image"
+        app:layout_constraintStart_toEndOf="@+id/open_activity_image"
+        app:layout_constraintTop_toTopOf="@+id/open_activity_image">
+    </TextView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

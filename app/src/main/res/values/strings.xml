@@ -73,6 +73,7 @@
     <string name="filter_my_activities">My activities</string>
     <string name="filter_signed_up_activities">Signed up activities</string>
     <string name="filter_open_activities">Open activities</string>
+    <string name="activities_map_legend">Legend</string>
 
     <!--New activity - Location page -->
     <string name="new_activity_loaction_back_btn"> Back </string>
