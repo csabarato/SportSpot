@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
+import com.sportspot.sportspot.model.AuthDetails;
 import com.sportspot.sportspot.model.UserDataModel;
 import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
@@ -23,7 +24,7 @@ public class UserDataService {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String api_url = ConfigUtil.getDevProperties().getProperty(ConfigConstants.API_URL);
 
-    public static ResponseModel<Void> syncUserData(UserDataModel userDataModel, String googleIdToken) {
+    public static ResponseModel<Void> syncUserData(UserDataModel userDataModel, AuthDetails authDetails) {
 
         ResponseModel<Void> responseModel = new ResponseModel<>();
 
@@ -37,7 +38,8 @@ public class UserDataService {
 
             Request request = new Request.Builder()
                     .url(uri.toString())
-                    .addHeader("Authorization", "Bearer "+ googleIdToken)
+                    .addHeader("Authorization", "Bearer "+ authDetails.getUserIdToken())
+                    .addHeader("Auth-Type", authDetails.getAuthType().toString())
                     .patch(body)
                     .build();
 

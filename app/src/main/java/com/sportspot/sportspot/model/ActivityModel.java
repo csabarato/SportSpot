@@ -97,11 +97,7 @@ public class ActivityModel {
         this.signedUpUsers = signedUpUsers;
     }
 
-    public boolean isUserSignedUp(GoogleSignInAccount account) {
-        return signedUpUsers.contains(account.getId());
-    }
-
-    public boolean isUserOwner(GoogleSignInAccount account) {
-        return owner.get_id().equals(account.getId());
+    public boolean isUserSignedUp(String userId) {
+        return signedUpUsers.contains(userId);
     }
 }

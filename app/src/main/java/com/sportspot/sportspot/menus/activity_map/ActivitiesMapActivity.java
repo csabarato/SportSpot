@@ -21,15 +21,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.constants.ActivityFilter;
 import com.sportspot.sportspot.constants.SharedPrefConst;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
+import com.sportspot.sportspot.utils.AuthUtils;
 import com.sportspot.sportspot.utils.DateUtils;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.view_model.ActivitiesMapViewModel;
@@ -283,9 +282,9 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     private void setActivityMarkerIcon(Marker activityMarker, ActivityModel activity) {
         Drawable activityLocationIcon;
         // Set Marker icon
-        if (activity.isUserOwner(GoogleSignIn.getLastSignedInAccount(this))) {
+        if (AuthUtils.getActiveUserId(this).equals(activity.getOwner().get_id())) {
             activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_my_activity_location);
-        } else if (activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(this))) {
+        } else if (activity.isUserSignedUp(AuthUtils.getActiveUserId(this))) {
             activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_signed_up_activity_location);
         } else {
             activityLocationIcon = ContextCompat.getDrawable(this.getApplicationContext(), R.drawable.ic_open_activity_location);
@@ -331,9 +330,9 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             TextView activityInfoDescLabel = mView.findViewById(R.id.activity_info_desc_label);
             TextView activityInfoDesc = mView.findViewById(R.id.activity_info_desc);
 
-            if (GoogleSignInService.isIdEqualsCurrentUserId(mView.getContext(), activity.getOwner().get_id())) {
+            if (AuthUtils.getActiveUserId(mView.getContext()).equals(activity.getOwner().get_id())) {
                 activityInfoOwner.setText(R.string.info_window_owner_me);
-            } else if (!activity.isUserSignedUp(GoogleSignIn.getLastSignedInAccount(ActivitiesMapActivity.this))) {
+            } else if (!activity.isUserSignedUp(AuthUtils.getActiveUserId(ActivitiesMapActivity.this))) {
                 activitySignUpButton.setVisibility(View.VISIBLE);
                 activityInfoOwner.setText(activity.getOwner().getDisplayName());
             } else {

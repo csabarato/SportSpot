@@ -42,7 +42,7 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
     public void loadActivities(ActivityFilter activityFilter) {
         isActivitiesLoading.setValue(true);
         asyncTaskRunner.executeAsync(
-                new GetActivitiesTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext()),
+                new GetActivitiesTask(getApplication().getApplicationContext(),
                                     activityFilter),
                 (data) -> {
 
@@ -64,7 +64,7 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
         AlertDialogDetails alertDialogDetails = new AlertDialogDetails();
         AsyncTaskRunner.getInstance()
                 .executeAsync(
-                        new ActivitySignUpTask(GoogleSignInService.getLastUserToken(getApplication().getApplicationContext()),activityId),
+                        new ActivitySignUpTask(getApplication().getApplicationContext(),activityId),
                         data -> {
                             if (data.getErrors().isEmpty()) {
                                 this.updateActivity(data.getData());

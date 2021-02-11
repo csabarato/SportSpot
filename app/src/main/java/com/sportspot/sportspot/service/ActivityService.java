@@ -9,6 +9,7 @@ import com.sportspot.sportspot.constants.MediaTypes;
 import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.model.ActivityRequestModel;
 import com.sportspot.sportspot.model.ActivityModel;
+import com.sportspot.sportspot.model.AuthDetails;
 import com.sportspot.sportspot.model.ResponseModel;
 import com.sportspot.sportspot.utils.ConfigUtil;
 
@@ -31,7 +32,7 @@ public class ActivityService {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String api_url = ConfigUtil.getDevProperties().getProperty(ConfigConstants.API_URL);
 
-    public static ResponseModel<String> addNewActivity(ActivityRequestModel activityReqModel, String googleIdToken) {
+    public static ResponseModel<String> addNewActivity(ActivityRequestModel activityReqModel, AuthDetails authDetails) {
 
         ResponseModel<String> responseModel = new ResponseModel<>();
 
@@ -46,7 +47,8 @@ public class ActivityService {
 
             Request request = new Request.Builder()
                 .url(builtUri.toString())
-                .addHeader("Authorization", "Bearer "+ googleIdToken)
+                .addHeader("Authorization", "Bearer "+ authDetails.getUserIdToken())
+                .addHeader("Auth-Type", authDetails.getAuthType().toString())
                 .post(requestBody)
                 .build();
 
@@ -68,7 +70,7 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<List<ActivityModel>> getActivities(String googleIdToken, ActivityFilter activityFilter) {
+    public static ResponseModel<List<ActivityModel>> getActivities(AuthDetails authDetails, ActivityFilter activityFilter) {
 
         ResponseModel<List<ActivityModel>> responseModel = new ResponseModel<>();
 
@@ -83,7 +85,8 @@ public class ActivityService {
 
             Request request = new Request.Builder()
                     .url(uriBuilder.build().toString())
-                    .addHeader("Authorization", "Bearer "+ googleIdToken)
+                    .addHeader("Authorization", "Bearer "+ authDetails.getUserIdToken())
+                    .addHeader("Auth-Type", authDetails.getAuthType().toString())
                     .get()
                     .build();
 
@@ -105,7 +108,7 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<ActivityModel> activitySignUp(String googleIdToken, String activityId) {
+    public static ResponseModel<ActivityModel> activitySignUp(AuthDetails authDetails, String activityId) {
 
         ResponseModel<ActivityModel> responseModel = new ResponseModel<>();
 
@@ -124,7 +127,8 @@ public class ActivityService {
 
             Request request = new Request.Builder()
                     .url(builtUri.toString())
-                    .addHeader("Authorization", "Bearer "+ googleIdToken)
+                    .addHeader("Authorization", "Bearer "+ authDetails.getUserIdToken())
+                    .addHeader("Auth-Type", authDetails.getAuthType().toString())
                     .post(body)
                     .build();
 

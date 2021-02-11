@@ -23,7 +23,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseUser;
 import com.sportspot.sportspot.R;
+import com.sportspot.sportspot.auth.firebase.FirebaseSignInService;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.converter.UserDataConverter;
 import com.sportspot.sportspot.main_menu.MainMenuActivity;
@@ -96,7 +98,23 @@ public class LoginActivity extends AppCompatActivity {
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
                     signInTask -> {
                         if (signInTask.isSuccessful()) {
-                            startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+
+                            FirebaseSignInService.getCurrentUserIdToken(task -> {
+                                if (task.isSuccessful()) {
+                                    FirebaseSignInService.saveAccessToken(this, task.getResult().getToken());
+                                    syncUserData(firebaseAuth.getCurrentUser(),
+                                            (data) -> {
+                                            if (data.getErrors().isEmpty()) {
+                                                startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
+                                            }
+                                            else {
+                                                DialogUtils.createAlertDialog(
+                                                        getString(R.string.user_data_sync_error_title) , String.join(";",data.getErrors()), LoginActivity.this).show();
+                                            }
+                                            });
+                                }
+                            });
+
                         } else {
                             Log.d(FIREBASE_LOG, "loginUserWithEmailAndPass:failure", signInTask.getException());
                             handleFirebaseLoginErrors(signInTask);
@@ -206,8 +224,13 @@ public class LoginActivity extends AppCompatActivity {
         AsyncTaskRunner.getInstance().executeAsync(
 
                 new SyncUserDataTask(
-                        UserDataConverter.convertAccountToUserDataModel(account),
-                        account.getIdToken()), callback);
+                        UserDataConverter.convertAccountToUserDataModel(account), getApplicationContext()), callback);
+    }
+
+    private void syncUserData(FirebaseUser user, AsyncTaskRunner.Callback<ResponseModel<Void>> callback) {
+        AsyncTaskRunner.getInstance().executeAsync(
+                new SyncUserDataTask(
+                        UserDataConverter.convertAccountToUserDataModel(user),getApplicationContext()), callback);
     }
 
     public void navigateToRegisterActivity(View view) {

@@ -84,7 +84,7 @@ public class NewActivityViewModel extends AndroidViewModel {
         AlertDialogDetails alertDialogDetails = new AlertDialogDetails();
         AsyncTaskRunner.getInstance().executeAsync(new PostNewActivityTask(
                 ActivityConverter.convertToRequestModel(this),
-                GoogleSignInService.getLastUserToken(getApplication().getApplicationContext())), (data) -> {
+                getApplication().getApplicationContext()), (data) -> {
 
             isSubmitPending.setValue(false);
             if (!data.getErrors().isEmpty()) {
