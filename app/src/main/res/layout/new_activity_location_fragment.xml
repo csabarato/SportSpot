@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".menus.new_activity.new_activity_fragments.ActivityLocationFragment"
+    tools:context=".menus.new_activity.new_activity_fragments.NewActivityLocationFragment"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"

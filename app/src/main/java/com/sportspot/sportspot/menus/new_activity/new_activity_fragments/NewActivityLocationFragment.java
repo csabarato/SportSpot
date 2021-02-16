@@ -43,7 +43,7 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class ActivityLocationFragment extends Fragment implements View.OnClickListener , MapEventsReceiver {
+public class NewActivityLocationFragment extends Fragment implements View.OnClickListener , MapEventsReceiver {
 
     private NewActivityViewModel newActivityViewModel;
     private MapView map;
@@ -60,7 +60,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
 
     private ShowcaseSequence showcaseSequence;
 
-    public ActivityLocationFragment() {
+    public NewActivityLocationFragment() {
     }
 
 
@@ -68,7 +68,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view =  inflater.inflate(R.layout.activity_location_fragment, container, false);
+        view =  inflater.inflate(R.layout.new_activity_location_fragment, container, false);
         this.asyncTaskRunner = new AsyncTaskRunner();
         sharedPreferences = getActivity().getSharedPreferences(SharedPrefConst.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
@@ -253,7 +253,7 @@ public class ActivityLocationFragment extends Fragment implements View.OnClickLi
     public void onClick(View v) {
 
         if (v.getId() == R.id.back_to_details_button) {
-            NavHostFragment.findNavController(ActivityLocationFragment.this).navigate(R.id.action_Location_to_Details);
+            NavHostFragment.findNavController(NewActivityLocationFragment.this).navigate(R.id.action_Location_to_Details);
         }
 
         else if (v.getId() == R.id.submit_new_activity) {

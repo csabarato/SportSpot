@@ -29,7 +29,7 @@ import com.sportspot.sportspot.view_model.NewActivityViewModel;
 
 import java.util.Calendar;
 
-public class ActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class NewActivityDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private EditText activityDescEditText, startDateEditText, startTimeEditText, numOfPersonsEditText;
     private ImageView startDatePickerIcon, startTimePickerIcon;
@@ -45,14 +45,14 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
 
 
 
-    public ActivityDetailsFragment() {
+    public NewActivityDetailsFragment() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_details_fragment, container, false);
+        View view = inflater.inflate(R.layout.new_activity_details_fragment, container, false);
 
         Button nextToLocationButton = view.findViewById(R.id.next_to_location_button);
 
@@ -146,7 +146,7 @@ public class ActivityDetailsFragment extends Fragment implements View.OnClickLis
             validateData();
             if (isDetailsFormValid) {
                 saveData();
-                NavHostFragment.findNavController(ActivityDetailsFragment.this)
+                NavHostFragment.findNavController(NewActivityDetailsFragment.this)
                         .navigate(R.id.action_Details_to_Location);
             }
         }
