@@ -143,8 +143,20 @@
                 android:visibility="gone"
                 android:layout_marginTop="15dp"
                 android:text="@string/activity_info_signup_btn_text"
-                app:layout_constraintStart_toStartOf="@+id/activity_info_desc_label"
+                app:layout_constraintStart_toStartOf="@+id/activity_info_desc"
                 app:layout_constraintTop_toBottomOf="@+id/activity_info_desc" />
+
+            <Button
+                android:id="@+id/activity_details_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/activity_info_details_btn_text"
+                android:visibility="visible"
+                android:layout_marginStart="20dp"
+                app:layout_constraintStart_toEndOf="@+id/activity_signup_button"
+                app:layout_constraintTop_toBottomOf="@+id/activity_info_desc"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

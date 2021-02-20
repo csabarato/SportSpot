@@ -1,6 +1,8 @@
 package com.sportspot.sportspot.model;
 
-public class SportTypeModel {
+import java.io.Serializable;
+
+public class SportTypeModel implements Serializable {
 
     private String _id;
     private String name;

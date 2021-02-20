@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -311,6 +312,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
         private final ActivityModel activity;
         private Button activitySignUpButton;
+        private Button activityDetailsButton;
 
         public ActivityInfoWindow(int layoutResId, MapView mapView, ActivityModel activity) {
             super(layoutResId, mapView);
@@ -326,6 +328,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             TextView activityInfoStartDate = mView.findViewById(R.id.activity_info_start_date);
             ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
             activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
+            activityDetailsButton = mView.findViewById(R.id.activity_details_button);
 
             TextView activityInfoDescLabel = mView.findViewById(R.id.activity_info_desc_label);
             TextView activityInfoDesc = mView.findViewById(R.id.activity_info_desc);
@@ -341,7 +344,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             activityInfoSportType.setText(activity.getSportType().getName());
             activityInfoPlaces.setText((activity.getRemainingPlaces()) + " / "+ (activity.getNumOfPersons()));
-            activityInfoStartDate.setText(DateUtils.toDateTimeString(new Date(activity.getStartDate())));
+            activityInfoStartDate.setText(DateUtils.toDateTimeString(activity.getStartDate()));
 
             if (activity.getDescription() != null && !activity.getDescription().isEmpty()) {
                 activityInfoDescLabel.setVisibility(View.VISIBLE);
@@ -350,6 +353,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
 
             infoCloseButton.setOnClickListener(onClick -> this.close());
             activitySignUpButton.setOnClickListener(this);
+            activityDetailsButton.setOnClickListener(this);
         }
 
         @Override
@@ -362,6 +366,10 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             if (v.equals(activitySignUpButton)) {
                 activitiesMapViewModel.signUpToActivity(activity.get_id());
                 close();
+            } else if (v.equals(activityDetailsButton)) {
+                Intent intent = new Intent(getApplicationContext(), ActivityDetailsActivity.class);
+                intent.putExtra("activity", activity);
+                startActivity(intent);
             }
         }
     }

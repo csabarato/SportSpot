@@ -1,10 +1,9 @@
 package com.sportspot.sportspot.model;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-
+import java.io.Serializable;
 import java.util.List;
 
-public class ActivityModel {
+public class ActivityModel implements Serializable {
 
     private String _id;
     private UserDataModel owner;
@@ -15,7 +14,7 @@ public class ActivityModel {
     private Integer numOfPersons;
     private Integer remainingPlaces;
     private String description;
-    private List<String> signedUpUsers;
+    private List<UserDataModel> signedUpUsers;
 
     public String get_id() {
         return _id;
@@ -89,15 +88,15 @@ public class ActivityModel {
         this.description = description;
     }
 
-    public List<String> getSignedUpUsers() {
+    public List<UserDataModel> getSignedUpUsers() {
         return signedUpUsers;
     }
 
-    public void setSignedUpUsers(List<String> signedUpUsers) {
+    public void setSignedUpUsers(List<UserDataModel> signedUpUsers) {
         this.signedUpUsers = signedUpUsers;
     }
 
     public boolean isUserSignedUp(String userId) {
-        return signedUpUsers.contains(userId);
+        return signedUpUsers.stream().anyMatch(userDataModel -> userDataModel.get_id().equals(userId));
     }
 }

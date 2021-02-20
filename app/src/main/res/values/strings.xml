@@ -66,6 +66,7 @@
     <string name="activity_info_start_date_label">Starts at :</string>
     <string name="activity_info_desc_label">Description :</string>
     <string name="activity_info_signup_btn_text">Sign up</string>
+    <string name="activity_info_details_btn_text">Details</string>
     <string name="activity_info_close_desc">Close info window</string>
 
     <string name="filter_activities_menu">Filter activities</string>
@@ -74,6 +75,14 @@
     <string name="filter_signed_up_activities">Signed up activities</string>
     <string name="filter_open_activities">Open activities</string>
     <string name="activities_map_legend">Legend</string>
+
+    <!-- Activity details page -->
+    <string name="activity_details_owner">Owner</string>
+    <string name="activity_details_participants">Participants</string>
+    <string name="activity_details_sport_type">Sport type</string>
+    <string name="activity_details_free_places">Free places</string>
+    <string name="activity_details_start_date">Start date and time</string>
+    <string name="activity_details_desc">Description</string>
 
     <!--New activity - Location page -->
     <string name="new_activity_loaction_back_btn"> Back </string>

@@ -3,8 +3,10 @@ package com.sportspot.sportspot.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.Serializable;
 
-public class UserDataModel {
+
+public class UserDataModel implements Serializable {
 
     private String _id;
     private String email;

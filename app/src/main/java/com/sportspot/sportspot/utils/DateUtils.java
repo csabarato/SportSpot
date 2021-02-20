@@ -17,9 +17,9 @@ public class DateUtils {
         return timeFormatter.format(date);
     }
 
-    public static String toDateTimeString(Date date) {
+    public static String toDateTimeString(Long dateInMillis) {
         SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        return dateTimeFormatter.format(date);
+        return dateTimeFormatter.format(new Date(dateInMillis));
     }
 
 }
