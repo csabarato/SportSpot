@@ -190,6 +190,9 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         map.onResume();
+
+        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
+        loadActivities(ActivityFilter.getActivityFilterByValue(selectedFilterType));
     }
 
     @Override
@@ -217,7 +220,10 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             if (overlay instanceof Marker &&
                 activities.stream().noneMatch(activity -> activity.get_id().equals(((Marker) overlay).getId()))) {
                     map.getOverlays().remove(overlay);
-                }
+                    if (((Marker) overlay).isInfoWindowShown()) {
+                        ((Marker) overlay).closeInfoWindow();
+                    }
+            }
         }
 
         for (ActivityModel activity : activities) {
