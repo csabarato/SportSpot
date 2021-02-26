@@ -49,7 +49,6 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,12 +108,17 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             }
         });
 
-        ProgressDialog signupPendingDP = createProgressDialog("Signing up to activity");
+        ProgressDialog signupPendingPD = createProgressDialog("Signing up to activity");
         activitiesMapViewModel.isSignupPending().observe(this, (isPending) -> {
-            if (isPending) signupPendingDP.show();
-            else signupPendingDP.dismiss();
+            if (isPending) signupPendingPD.show();
+            else signupPendingPD.dismiss();
         });
 
+        ProgressDialog removeSignupPendingPD = createProgressDialog("Remove activity signup");
+        activitiesMapViewModel.isRemoveSignupPending().observe(this, (isPending) -> {
+            if (isPending) removeSignupPendingPD.show();
+            else removeSignupPendingPD.dismiss();
+        });
     }
 
     private void loadActivities(ActivityFilter activityFilter) {
@@ -319,6 +323,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         private final ActivityModel activity;
         private Button activitySignUpButton;
         private Button activityDetailsButton;
+        private Button activityRemoveSignupButton;
 
         public ActivityInfoWindow(int layoutResId, MapView mapView, ActivityModel activity) {
             super(layoutResId, mapView);
@@ -335,6 +340,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             ImageButton infoCloseButton = mView.findViewById(R.id.info_close_button);
             activitySignUpButton = mView.findViewById(R.id.activity_signup_button);
             activityDetailsButton = mView.findViewById(R.id.activity_details_button);
+            activityRemoveSignupButton = mView.findViewById(R.id.activity_remove_signup_button);
 
             TextView activityInfoDescLabel = mView.findViewById(R.id.activity_info_desc_label);
             TextView activityInfoDesc = mView.findViewById(R.id.activity_info_desc);
@@ -345,6 +351,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 activitySignUpButton.setVisibility(View.VISIBLE);
                 activityInfoOwner.setText(activity.getOwner().getDisplayName());
             } else {
+                activityRemoveSignupButton.setVisibility(View.VISIBLE);
                 activityInfoOwner.setText(activity.getOwner().getDisplayName());
             }
 
@@ -360,6 +367,7 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             infoCloseButton.setOnClickListener(onClick -> this.close());
             activitySignUpButton.setOnClickListener(this);
             activityDetailsButton.setOnClickListener(this);
+            activityRemoveSignupButton.setOnClickListener(this);
         }
 
         @Override
@@ -376,6 +384,9 @@ public class ActivitiesMapActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ActivityDetailsActivity.class);
                 intent.putExtra("activity", activity);
                 startActivity(intent);
+            } else if (v.equals(activityRemoveSignupButton)) {
+                activitiesMapViewModel.removeActivitySignup(activity.get_id());
+                close();
             }
         }
     }

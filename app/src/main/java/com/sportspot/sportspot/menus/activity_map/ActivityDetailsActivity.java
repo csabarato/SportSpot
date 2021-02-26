@@ -18,6 +18,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.sportspot.sportspot.R;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
+import com.sportspot.sportspot.service.tasks.RemoveActivitySignUpTask;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.SignedUpUsersListAdapter;
 import com.sportspot.sportspot.utils.AuthUtils;
@@ -31,9 +32,9 @@ public class ActivityDetailsActivity extends AppCompatActivity implements View.O
 
     private MaterialCardView descriptionCardView;
     private RecyclerView signedUpUsersRecyclerView;
-    private Button signupButton;
+    private Button signupButton, removeSignupButton;
     private ActivityModel activity;
-    private ProgressDialog signupProgressDialog;
+    private ProgressDialog signupProgressDialog, removeSignupProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +50,13 @@ public class ActivityDetailsActivity extends AppCompatActivity implements View.O
         descriptionCardView = findViewById(R.id.description_card);
         descriptionTextView = findViewById(R.id.description_card_text);
         signupButton = findViewById(R.id.activity_details_signup_button);
-
-
+        removeSignupButton = findViewById(R.id.activity_details_remove_signup_button);
 
         showActivityDetails();
         showSignupButton();
+        showRemoveSignupButton();
         signupProgressDialog = createProgressDialog("Signing up to activity");
-
+        removeSignupProgressDialog = createProgressDialog("Remove activity signup");
 
     }
 
@@ -99,6 +100,16 @@ public class ActivityDetailsActivity extends AppCompatActivity implements View.O
         }
     }
 
+    private void showRemoveSignupButton() {
+        String activeUserId = AuthUtils.getActiveUserId(getApplicationContext());
+
+        if (!activity.getOwner().get_id().equals(activeUserId) &&
+                activity.isUserSignedUp(activeUserId)) {
+            removeSignupButton.setVisibility(View.VISIBLE);
+            removeSignupButton.setOnClickListener(this);
+        }
+    }
+
     private ProgressDialog createProgressDialog(String message) {
             ProgressDialog progressDialog  = new ProgressDialog(ActivityDetailsActivity.this);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -112,6 +123,8 @@ public class ActivityDetailsActivity extends AppCompatActivity implements View.O
 
         if (v.getId() == signupButton.getId()) {
             signUpToActivity();
+        } else if (v.getId() == removeSignupButton.getId()) {
+            removeActivitySignup();
         }
     }
 
@@ -142,5 +155,36 @@ public class ActivityDetailsActivity extends AppCompatActivity implements View.O
                                         ActivityDetailsActivity.this).show();
                             }
                         });
+    }
+
+    private void removeActivitySignup() {
+
+        removeSignupProgressDialog.show();
+        AsyncTaskRunner.getInstance()
+                .executeAsync(
+                        new RemoveActivitySignUpTask(getApplication().getApplicationContext(), activity.get_id()),
+                        data -> {
+                            removeSignupProgressDialog.dismiss();
+                            if (data.getErrors().isEmpty()) {
+                                AlertDialog infoDialog = DialogUtils.createAlertDialog("Signup removed succesfully","You've removed your signup from this activity.",
+                                        ActivityDetailsActivity.this);
+                                infoDialog.show();
+
+                                ActivityModel updatedActivity = data.getData();
+                                Intent refreshIntent = getIntent().putExtra("activity", updatedActivity);
+
+                                new Handler().postDelayed(() -> {
+                                    finish();
+                                    infoDialog.dismiss();
+                                    startActivity(refreshIntent);
+                                }, 1500);
+
+                            } else {
+                                DialogUtils.createAlertDialog("Remove signup error",String.join(";", data.getErrors()),
+                                        ActivityDetailsActivity.this).show();
+                            }
+                        });
+
+
     }
 }

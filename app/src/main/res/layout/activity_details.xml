@@ -209,13 +209,21 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-
             <Button
                 android:id="@+id/activity_details_signup_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:text="@string/activity_info_signup_btn_text"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/activity_details_remove_signup_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="@string/activity_info_remove_signup_btn_text"
+                android:backgroundTint="@color/colorAccent"
                 android:visibility="gone" />
 
         </LinearLayout>

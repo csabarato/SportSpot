@@ -66,6 +66,7 @@
     <string name="activity_info_start_date_label">Starts at :</string>
     <string name="activity_info_desc_label">Description :</string>
     <string name="activity_info_signup_btn_text">Sign up</string>
+    <string name="activity_info_remove_signup_btn_text">Remove signup</string>
     <string name="activity_info_details_btn_text">Details</string>
     <string name="activity_info_close_desc">Close info window</string>
 

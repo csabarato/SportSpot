@@ -147,4 +147,44 @@ public class ActivityService {
         }
         return responseModel;
     }
+
+    public static ResponseModel<ActivityModel> removeActivitySignup(AuthDetails authDetails, String activityId) {
+
+        ResponseModel<ActivityModel> responseModel = new ResponseModel<>();
+
+        Uri builtUri = Uri.parse(api_url).buildUpon()
+                .appendPath("activity")
+                .appendPath("remove_signup")
+                .build();
+
+        try {
+
+            // Build request body
+            JSONObject bodyJSONObj = new JSONObject();
+            bodyJSONObj.put("activity", activityId);
+
+            RequestBody body = RequestBody.create(MediaTypes.JSON, bodyJSONObj.toString());
+
+            Request request = new Request.Builder()
+                    .url(builtUri.toString())
+                    .addHeader("Authorization", "Bearer " + authDetails.getUserIdToken())
+                    .addHeader("Auth-Type", authDetails.getAuthType().toString())
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                responseModel.setData(ActivityConverter.convertToActivityModel(response.body().string()));
+            } else {
+                responseModel.setErrors(Arrays.asList("Error: " + (response.code()), response.message(), response.body().string()));
+            }
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+            responseModel.setErrors(Collections.singletonList(e.getMessage()));
+            return responseModel;
+        }
+        return responseModel;
+    }
 }

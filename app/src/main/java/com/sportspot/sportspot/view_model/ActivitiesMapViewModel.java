@@ -12,6 +12,7 @@ import com.sportspot.sportspot.constants.ActivityFilter;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
+import com.sportspot.sportspot.service.tasks.RemoveActivitySignUpTask;
 import com.sportspot.sportspot.shared.AsyncTaskRunner;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 
@@ -24,6 +25,7 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
     private MutableLiveData<AlertDialogDetails> alertDetailsLiveData = new MutableLiveData<>();
     private MutableLiveData<Boolean> isActivitiesLoading = new MutableLiveData<>(false);
     private MutableLiveData<Boolean> isSignupPending = new MutableLiveData<>(false);
+    private MutableLiveData<Boolean> isRemoveSignupPending = new MutableLiveData<>(false);
 
     private AsyncTaskRunner asyncTaskRunner = AsyncTaskRunner.getInstance();
 
@@ -81,6 +83,28 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
                         });
     }
 
+    public void removeActivitySignup(String activityId) {
+        isRemoveSignupPending.setValue(true);
+        AlertDialogDetails alertDialogDetails = new AlertDialogDetails();
+        AsyncTaskRunner.getInstance()
+                .executeAsync(
+                        new RemoveActivitySignUpTask(getApplication().getApplicationContext(),activityId),
+                        data -> {
+                            if (data.getErrors().isEmpty()) {
+                                this.updateActivity(data.getData());
+
+                                alertDialogDetails.setTitle( "Signup removed succesfully");
+                                alertDialogDetails.setMessage("You've removed your signup from this activity.");
+                                alertDetailsLiveData.setValue(alertDialogDetails);
+                            } else {
+                                alertDialogDetails.setTitle( "Remove signup error");
+                                alertDialogDetails.setMessage(String.join(";", data.getErrors()));
+                                alertDetailsLiveData.setValue(alertDialogDetails);
+                            }
+                            isRemoveSignupPending.setValue(false);
+                        });
+    }
+
     private void updateActivity(ActivityModel updatedActivity) {
 
         Optional<ActivityModel> oldActivity = activities.getValue()
@@ -102,4 +126,6 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
     public MutableLiveData<Boolean> isSignupPending() {
         return isSignupPending;
     }
+
+    public MutableLiveData<Boolean> isRemoveSignupPending() {return isRemoveSignupPending;}
 }
