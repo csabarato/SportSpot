@@ -7,6 +7,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -43,6 +45,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private TextView navHeaderText;
     private ImageView navHeaderImage;
+    private RecyclerView dashboardRecyclerView;
 
     private static final int ACTIVITIES_MAP_REQUEST_PERMISSION_CODE = 1;
     private static final int NEW_ACTIVITY_MAP_REQUEST_PERMISSION_CODE = 2;
@@ -66,6 +69,10 @@ public class MainMenuActivity extends AppCompatActivity {
         navHeaderText = headerView.findViewById(R.id.nav_header_menu_text);
         navHeaderImage = headerView.findViewById(R.id.nav_header_menu_image);
 
+        // Get Dashboard recycler view
+        dashboardRecyclerView = findViewById(R.id.dashboard_sport_recycler_view);
+        setupDashboardRecyclerView();
+
         // setup Main menu nav drawer
         new SideNavDrawer(this, toolbar, drawerLayout, this.createOnNavItemSelectedListener());
 
@@ -76,6 +83,12 @@ public class MainMenuActivity extends AppCompatActivity {
                 setNavHeaderImageAndTextByGoogleAccount(account);
             }
         }
+    }
+
+    private void setupDashboardRecyclerView() {
+        dashboardRecyclerView.setLayoutManager(new LinearLayoutManager(MainMenuActivity.this));
+        SportCardAdapter sportCardAdapter = new SportCardAdapter(this);
+        dashboardRecyclerView.setAdapter(sportCardAdapter);
     }
 
     private void setNavHeaderImageAndTextByGoogleAccount(GoogleSignInAccount account) {
@@ -117,13 +130,17 @@ public class MainMenuActivity extends AppCompatActivity {
                 } else if (itemId == R.id.pitches) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
+                } else if (itemId == R.id.logout) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    logout();
+                    return true;
                 }
                 return false;
             }
         };
     }
 
-    public void logout(View view) {
+    public void logout() {
 
         if (firebaseAuth.getCurrentUser() != null) {
             firebaseAuth.signOut();

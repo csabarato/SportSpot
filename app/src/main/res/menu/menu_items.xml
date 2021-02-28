@@ -20,4 +20,10 @@
         android:id="@+id/pitches"
         android:icon="@drawable/ic_menu_pitches"
         android:title="@string/menu_pitches" />
+
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_menu_logout"
+        android:title="@string/menu_logout" />
+
 </menu>

@@ -8,6 +8,6 @@
     >
 
     <include layout="@layout/toolbar"/>
-    <include layout="@layout/content_main_menu"/>
+    <include layout="@layout/content_dashboard"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

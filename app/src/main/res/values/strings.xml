@@ -32,6 +32,7 @@
     <string name="menu_activities_map">Map of activities</string>
     <string name="menu_new_activity">Add new activity</string>
     <string name="menu_pitches">Pithces</string>
+    <string name="menu_logout">Logout</string>
 
     <!--New activity - Details page -->
     <string name="new_activity_detail_header"> Add the details of your activity </string>
@@ -94,7 +95,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
-    <string name="logout">Logout</string>
     <string name="email_card_title">Email</string>
     <string name="name_card_title">Name</string>
     <string name="welcome_message"> Hello, "%1$s" !</string>
