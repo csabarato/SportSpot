@@ -36,6 +36,7 @@ import com.squareup.picasso.Picasso;
 
 public class MainMenuActivity extends AppCompatActivity {
 
+    public static final int MAIN_MENU_ACTIVITY_RC = 2;
 
     private FirebaseAuth firebaseAuth;
 
@@ -87,8 +88,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private void setupDashboardRecyclerView() {
         dashboardRecyclerView.setLayoutManager(new LinearLayoutManager(MainMenuActivity.this));
-        SportCardAdapter sportCardAdapter = new SportCardAdapter(this);
-        dashboardRecyclerView.setAdapter(sportCardAdapter);
+        DashboardCardAdapter dashboardCardAdapter = new DashboardCardAdapter(this);
+        dashboardRecyclerView.setAdapter(dashboardCardAdapter);
     }
 
     private void setNavHeaderImageAndTextByGoogleAccount(GoogleSignInAccount account) {
@@ -156,7 +157,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Check if necessary permissions is granted.
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            startActivity(new Intent(getApplicationContext(), ActivitiesMapActivity.class));
+            this.startActivityForResult(new Intent(getApplicationContext(), ActivitiesMapActivity.class), MAIN_MENU_ACTIVITY_RC);
         // Request for needed permissions
         } else {
             ActivityCompat.requestPermissions(this,

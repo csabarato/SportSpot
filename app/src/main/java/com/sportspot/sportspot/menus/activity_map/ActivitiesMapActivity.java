@@ -24,8 +24,10 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.constants.ActivityFilter;
+import com.sportspot.sportspot.constants.ActivityType;
 import com.sportspot.sportspot.constants.SharedPrefConst;
+import com.sportspot.sportspot.constants.SportType;
+import com.sportspot.sportspot.main_menu.MainMenuActivity;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.shared.AlertDialogDetails;
 import com.sportspot.sportspot.shared.LocationProvider;
@@ -57,6 +59,9 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     private MapView map = null;
     private ActivitiesMapViewModel activitiesMapViewModel;
     private SharedPreferences sharedPreferences;
+
+    private ActivityType selectedActivityTypeFilter;
+    private SportType selectedSportTypeFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +98,13 @@ public class ActivitiesMapActivity extends AppCompatActivity {
             DialogUtils.createAlertDialog(getString(R.string.location_unavailable_title),getString(R.string.location_unavailable_message), ActivitiesMapActivity.this).show();
         }
 
-        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
-        loadActivities(ActivityFilter.getActivityFilterByValue(selectedFilterType));
+        // Get Sport Type filter value
+        selectedSportTypeFilter = setupSportTypeFilter();
+
+        // Get Activity Type filter value
+        String selectedTypeFilterValue = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_TYPE, "all");
+        selectedActivityTypeFilter = ActivityType.getActivityTypeByValue(selectedTypeFilterValue);
+        loadActivities(selectedActivityTypeFilter, selectedSportTypeFilter);
 
         activitiesMapViewModel.getActivities().observe(this, this::showActivityMarkers);
         activitiesMapViewModel.getAlertDetailsLiveData().observe(this, this::showAlertDialog);
@@ -121,8 +131,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         });
     }
 
-    private void loadActivities(ActivityFilter activityFilter) {
-            activitiesMapViewModel.loadActivities(activityFilter);
+    private void loadActivities(ActivityType activityType, SportType sportType) {
+            activitiesMapViewModel.loadActivities(activityType, sportType);
     }
 
     private void setToolbar() {
@@ -136,6 +146,28 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         }
     }
 
+    private SportType setupSportTypeFilter() {
+
+        if (getCallingActivity() != null && getCallingActivity().getClassName().equals(MainMenuActivity.class.getName())) {
+            sharedPreferences.edit().remove(SharedPrefConst.SELECTED_SPORT_TYPE).apply();
+            return null;
+        }
+
+        SportType sportTypeFilter = (SportType) getIntent().getSerializableExtra("sportTypeFilter");
+        if (sportTypeFilter == null) {
+            String sportTypeNameFromSharedPref = sharedPreferences.getString(SharedPrefConst.SELECTED_SPORT_TYPE, null);
+            if (sportTypeNameFromSharedPref != null) {
+                sportTypeFilter = SportType.getSportTypeByName(sportTypeNameFromSharedPref);
+            }
+        }
+
+        if (sportTypeFilter != null) {
+            saveSelectedSportTypeToSharedPref(sportTypeFilter);
+        }
+
+        return sportTypeFilter;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -146,8 +178,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 
-        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
-        ActivityFilter selectedFilter = ActivityFilter.getActivityFilterByValue(selectedFilterType);
+        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_TYPE, "all");
+        ActivityType selectedFilter = ActivityType.getActivityTypeByValue(selectedFilterType);
 
         switch (selectedFilter) {
             case MY_ACTIVITIES: menu.findItem(R.id.my_activities).setChecked(true);
@@ -167,17 +199,21 @@ public class ActivitiesMapActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.all_activities && !item.isChecked()) {
-            loadActivities(null);
-            saveSelectedFilterToSharedPref(ActivityFilter.ALL_ACTIVITIES);
+            selectedActivityTypeFilter = ActivityType.ALL_ACTIVITIES;
+            loadActivities(null, selectedSportTypeFilter);
+            saveSelectedActivityTypeToSharedPref(selectedActivityTypeFilter);
         } else if (item.getItemId() == R.id.my_activities && !item.isChecked()) {
-            loadActivities(ActivityFilter.MY_ACTIVITIES);
-            saveSelectedFilterToSharedPref(ActivityFilter.MY_ACTIVITIES);
+            selectedActivityTypeFilter = ActivityType.MY_ACTIVITIES;
+            loadActivities(ActivityType.MY_ACTIVITIES, selectedSportTypeFilter);
+            saveSelectedActivityTypeToSharedPref(selectedActivityTypeFilter);
         } else if (item.getItemId() == R.id.signed_up_activities && !item.isChecked()) {
-            loadActivities(ActivityFilter.SIGNED_UP_ACTIVITIES);
-            saveSelectedFilterToSharedPref(ActivityFilter.SIGNED_UP_ACTIVITIES);
+            selectedActivityTypeFilter = ActivityType.SIGNED_UP_ACTIVITIES;
+            loadActivities(ActivityType.SIGNED_UP_ACTIVITIES, selectedSportTypeFilter);
+            saveSelectedActivityTypeToSharedPref(selectedActivityTypeFilter);
         } else if (item.getItemId() == R.id.open_activities && !item.isChecked()) {
-            loadActivities(ActivityFilter.OPEN_ACTIVITIES);
-            saveSelectedFilterToSharedPref(ActivityFilter.OPEN_ACTIVITIES);
+            selectedActivityTypeFilter = ActivityType.OPEN_ACTIVITIES;
+            loadActivities(ActivityType.OPEN_ACTIVITIES, selectedSportTypeFilter);
+            saveSelectedActivityTypeToSharedPref(selectedActivityTypeFilter);
         } else if (item.getItemId() == R.id.map_legend) {
             showLegendDialog();
         }
@@ -186,8 +222,12 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveSelectedFilterToSharedPref(ActivityFilter activityFilter) {
-        sharedPreferences.edit().putString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, activityFilter.getFilterValue()).apply();
+    private void saveSelectedActivityTypeToSharedPref(ActivityType activityType) {
+        sharedPreferences.edit().putString(SharedPrefConst.SELECTED_ACTIVITY_TYPE, activityType.getFilterValue()).apply();
+    }
+
+    private void saveSelectedSportTypeToSharedPref(SportType sportType) {
+        sharedPreferences.edit().putString(SharedPrefConst.SELECTED_SPORT_TYPE, sportType.getName()).apply();
     }
 
     @Override
@@ -195,8 +235,8 @@ public class ActivitiesMapActivity extends AppCompatActivity {
         super.onResume();
         map.onResume();
 
-        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_FILTER_TYPE, "all");
-        loadActivities(ActivityFilter.getActivityFilterByValue(selectedFilterType));
+        String selectedFilterType = sharedPreferences.getString(SharedPrefConst.SELECTED_ACTIVITY_TYPE, "all");
+        loadActivities(ActivityType.getActivityTypeByValue(selectedFilterType), selectedSportTypeFilter);
     }
 
     @Override

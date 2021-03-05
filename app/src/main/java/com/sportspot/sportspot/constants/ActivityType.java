@@ -1,6 +1,6 @@
 package com.sportspot.sportspot.constants;
 
-public enum ActivityFilter {
+public enum ActivityType {
 
     ALL_ACTIVITIES("all"),
     MY_ACTIVITIES("my"),
@@ -9,7 +9,7 @@ public enum ActivityFilter {
 
     private String filterValue;
 
-    ActivityFilter(String filterValue) {
+    ActivityType(String filterValue) {
         this.filterValue = filterValue;
     }
 
@@ -17,10 +17,10 @@ public enum ActivityFilter {
         return filterValue;
     }
 
-    public static ActivityFilter getActivityFilterByValue(String filterValue) {
-        for (ActivityFilter activityFilter : ActivityFilter.values()) {
-            if (activityFilter.getFilterValue().equals(filterValue)) {
-                return activityFilter;
+    public static ActivityType getActivityTypeByValue(String filterValue) {
+        for (ActivityType activityType : ActivityType.values()) {
+            if (activityType.getFilterValue().equals(filterValue)) {
+                return activityType;
             }
         }
         return null;

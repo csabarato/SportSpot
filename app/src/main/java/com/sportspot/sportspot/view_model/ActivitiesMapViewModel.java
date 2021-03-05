@@ -7,8 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.sportspot.sportspot.R;
-import com.sportspot.sportspot.auth.google.GoogleSignInService;
-import com.sportspot.sportspot.constants.ActivityFilter;
+import com.sportspot.sportspot.constants.ActivityType;
+import com.sportspot.sportspot.constants.SportType;
 import com.sportspot.sportspot.model.ActivityModel;
 import com.sportspot.sportspot.service.tasks.ActivitySignUpTask;
 import com.sportspot.sportspot.service.tasks.GetActivitiesTask;
@@ -41,11 +41,11 @@ public class ActivitiesMapViewModel extends AndroidViewModel {
         return alertDetailsLiveData;
     }
 
-    public void loadActivities(ActivityFilter activityFilter) {
+    public void loadActivities(ActivityType activityType, SportType sportType) {
         isActivitiesLoading.setValue(true);
         asyncTaskRunner.executeAsync(
                 new GetActivitiesTask(getApplication().getApplicationContext(),
-                                    activityFilter),
+                        activityType, sportType),
                 (data) -> {
 
                     if (data.getErrors().isEmpty() && data.getData() != null) {

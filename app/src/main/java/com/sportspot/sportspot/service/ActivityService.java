@@ -3,9 +3,10 @@ package com.sportspot.sportspot.service;
 import android.net.Uri;
 
 
-import com.sportspot.sportspot.constants.ActivityFilter;
+import com.sportspot.sportspot.constants.ActivityType;
 import com.sportspot.sportspot.constants.ConfigConstants;
 import com.sportspot.sportspot.constants.MediaTypes;
+import com.sportspot.sportspot.constants.SportType;
 import com.sportspot.sportspot.converter.ActivityConverter;
 import com.sportspot.sportspot.model.ActivityRequestModel;
 import com.sportspot.sportspot.model.ActivityModel;
@@ -70,15 +71,19 @@ public class ActivityService {
         }
     }
 
-    public static ResponseModel<List<ActivityModel>> getActivities(AuthDetails authDetails, ActivityFilter activityFilter) {
+    public static ResponseModel<List<ActivityModel>> getActivities(AuthDetails authDetails, ActivityType activityType, SportType sportType) {
 
         ResponseModel<List<ActivityModel>> responseModel = new ResponseModel<>();
 
         Uri.Builder uriBuilder = Uri.parse(api_url).buildUpon()
                 .appendPath("activities");
 
-        if (activityFilter != null && activityFilter != ActivityFilter.ALL_ACTIVITIES) {
-            uriBuilder.appendQueryParameter("q", activityFilter.getFilterValue());
+        if (activityType != null && activityType != ActivityType.ALL_ACTIVITIES) {
+            uriBuilder.appendQueryParameter("q", activityType.getFilterValue());
+        }
+
+        if (sportType != null) {
+            uriBuilder.appendQueryParameter("sportType", sportType.getName());
         }
 
         try {
