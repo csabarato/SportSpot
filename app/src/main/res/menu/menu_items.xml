@@ -17,9 +17,14 @@
         android:title="@string/menu_new_activity" />
 
     <item
-        android:id="@+id/pitches"
-        android:icon="@drawable/ic_menu_pitches"
-        android:title="@string/menu_pitches" />
+        android:id="@+id/map_of_grounds"
+        android:icon="@drawable/ic_map_of_grounds"
+        android:title="@string/menu_grounds" />
+
+    <item
+        android:id="@+id/new_ground"
+        android:icon="@drawable/ic_add_new_ground"
+        android:title="@string/menu_new_ground" />
 
     <item
         android:id="@+id/logout"

@@ -31,7 +31,8 @@
     <string name="menu_profile">My profile</string>
     <string name="menu_activities_map">Map of activities</string>
     <string name="menu_new_activity">Add new activity</string>
-    <string name="menu_pitches">Pithces</string>
+    <string name="menu_grounds">Map of grounds</string>
+    <string name="menu_new_ground">Add new ground</string>
     <string name="menu_logout">Logout</string>
 
     <!--New activity - Details page -->
@@ -49,7 +50,18 @@
     <string name="new_activity_num_of_persons_hint">Num of persons</string>
     <string name="new_activity_num_of_persons_required">Num of persons</string>
 
-    <!--Sport type select-->
+    <!--New ground - Details page -->
+    <string name="new_ground_detail_header"> Add the details of the ground </string>
+    <string name="new_ground_detail_description"> Description </string>
+    <string name="new_ground_next_btn"> Next </string>
+
+    <string name="new_ground_sport_types_desc">Select sport types</string>
+    <string name="new_ground_sport_required"> Sport type is required</string>
+    <string name="cost_free_checkbox"> Cost-free </string>
+    <string name="cost_per_hour_hint"> Cost per hour (HUF) </string>
+
+
+    <!--Sport type array-->
     <string name="sport_select_hint">Select a sport</string>
     <string-array name="sport_type_items_array">
         <item>Basketball</item>
@@ -57,6 +69,24 @@
         <item>Table tennis</item>
         <item>Tennis</item>
         <item>Teqball</item>
+    </string-array>
+
+    <!--Sport type strings-->
+    <string name="sportType_basketball">Basketball</string>
+    <string name="sportType_football">Football</string>
+    <string name="sportType_tableTennis">Table tennis</string>
+    <string name="sportType_tennis" >Tennis</string>
+    <string name="sportType_teqball" >Teqball</string>
+
+    <!--Coverage type select-->
+    <string name="coverage_select_hint">Select a coverage type</string>
+    <string-array name="coverage_types_array">
+        <item>Grass</item>
+        <item>Concrete</item>
+        <item>Artificial grass</item>
+        <item>Clay court</item>
+        <item>Hard court</item>
+
     </string-array>
 
     <!-- Map of Activities page -->

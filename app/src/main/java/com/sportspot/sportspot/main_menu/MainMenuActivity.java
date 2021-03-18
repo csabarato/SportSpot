@@ -29,6 +29,7 @@ import com.sportspot.sportspot.auth.LoginActivity;
 import com.sportspot.sportspot.auth.google.GoogleSignInService;
 import com.sportspot.sportspot.menus.activity_map.ActivitiesMapActivity;
 import com.sportspot.sportspot.menus.new_activity.NewActivityAcitvity;
+import com.sportspot.sportspot.menus.new_ground.NewGroundActivity;
 import com.sportspot.sportspot.menus.profile.UserProfileActivity;
 import com.sportspot.sportspot.utils.DialogUtils;
 import com.sportspot.sportspot.utils.SideNavDrawer;
@@ -128,10 +129,16 @@ public class MainMenuActivity extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     startAddNewActivityActivity();
                     return true;
-                } else if (itemId == R.id.pitches) {
+                } else if (itemId == R.id.map_of_grounds) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
-                } else if (itemId == R.id.logout) {
+                } else if (itemId == R.id.new_ground) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    startAddNewGroundActivity();
+                    return true;
+                }
+
+                else if (itemId == R.id.logout) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     logout();
                     return true;
@@ -170,6 +177,18 @@ public class MainMenuActivity extends AppCompatActivity {
         // Check if necessary permissions is granted.
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             startActivity(new Intent(getApplicationContext(), NewActivityAcitvity.class));
+            // Request for needed permissions
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    NEW_ACTIVITY_MAP_REQUEST_PERMISSION_CODE);
+        }
+    }
+
+    private void startAddNewGroundActivity() {
+        // Check if necessary permissions is granted.
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            startActivity(new Intent(getApplicationContext(), NewGroundActivity.class));
             // Request for needed permissions
         } else {
             ActivityCompat.requestPermissions(this,
